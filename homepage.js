@@ -232,4 +232,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('dragstart', function(e) {
     e.preventDefault();
   });
+
+// Prevent default touch behavior
+  document.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+  }, { passive: false });
 });
