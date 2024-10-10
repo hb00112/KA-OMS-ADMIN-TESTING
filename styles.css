@@ -25,7 +25,7 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-margin-top: 200px;
+
 }
 
 .logo {
@@ -238,6 +238,7 @@ header {
     padding: px;
     max-width: 1200px;
     margin: 0 auto;
+margin-top: 20px;
 }
 
 /* Card Styles */
