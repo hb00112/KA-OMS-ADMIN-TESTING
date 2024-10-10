@@ -213,3 +213,23 @@ function goBack() {
 function quickAction() {
     alert('Quick Action Triggered');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Prevent text selection
+  document.body.style.userSelect = 'none';
+  
+  // Prevent context menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Prevent copy
+  document.addEventListener('copy', function(e) {
+    e.preventDefault();
+  });
+
+  // Disable drag and drop
+  document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+  });
+});
