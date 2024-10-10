@@ -1,0 +1,151 @@
+/* Styles for the Party Ledger section */
+
+/* Container for the entire party ledger section */
+.party-ledger-container {
+    padding: 20px 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Search bar container */
+.party-search-container {
+    margin: 20px 0;
+    padding: 0 16px;
+}
+
+/* Search bar input */
+.party-search {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Party list container */
+.party-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 16px;
+}
+
+/* Individual party item */
+.party-item {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.party-name {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.party-details {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Add Party button */
+.party-add-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #6A0DAD;
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.party-add-btn.expanded {
+    width: auto;
+    border-radius: 28px;
+    padding: 0 20px;
+}
+
+.party-add-text {
+    display: none;
+    margin-left: 8px;
+}
+
+.party-add-btn.expanded .party-add-text {
+    display: inline;
+}
+
+#partySearch {
+    margin-top: 40px;
+     /* Adds space below the search bar */
+}
+
+/* OR */
+
+#partyDetailContainer {
+    margin-top: 20px; /* Adds space above the party detail container */
+}
+
+/* Media queries for responsive design */
+@media screen and (min-width: 480px) {
+    .party-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .party-ledger-container {
+        padding: 30px 24px;
+    }
+    
+    .party-search-container {
+        padding: 0 24px;
+    }
+    
+    .party-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        padding: 0 24px;
+    }
+    
+    .party-add-btn {
+        bottom: 30px;
+        right: 30px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .party-ledger-container {
+        padding: 40px 32px;
+    }
+    
+    .party-search-container {
+        padding: 0;
+        max-width: 600px;
+        margin: 30px auto;
+    }
+    
+    .party-list {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px;
+        padding: 0;
+    }
+    
+    .party-add-btn {
+        bottom: 40px;
+        right: 40px;
+    }
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KA Payments App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="loading.css">
+    <link rel="stylesheet" href="partyledger.css">
+    <link rel="stylesheet" href="billentry.css">
+    <link rel="stylesheet" href="paymententry.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loader-container">
+        <img src="https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png" alt="Logo" class="logo">
+        <div class="loader"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" style="display: none;">
+        <!-- Login Container -->
+        <div id="login-container" class="container">
+            <div class="logo">
+                <img src="https://i.postimg.cc/dQyMcj7L/Whats-App-Image-2024-10-09-at-16-20-24-6c5c6111-removebg-preview.png" alt="Logo">
+            </div>
+            <div class="input-group">
+                <img src="https://i.postimg.cc/WpXZjgQc/user-icon-in-trendy-flat-style-isolated-on-grey-background-user-symbol-for-your-web-site-design-logo.png" alt="Username Icon">
+                <input type="text" id="username" placeholder="Username">
+            </div>
+            <div class="input-group">
+                <img src="https://i.postimg.cc/JzrM8YBR/png-transparent-computer-icons-password-login-user-privacy-miscellaneous-christianity-rectangle-thum.png" alt="Password Icon">
+                <input type="password" id="password" placeholder="Password">
+            </div>
+            <button class="login-btn" onclick="login()">LOGIN</button>
+            <div class="forgot-password">
+                <button class="forgot-password-btn" onclick="forgotPassword()">Forgot Password?</button>
+            </div>
+        </div>
+
+        <!-- Passkey Container -->
+        <div id="passkey-container" class="container" style="display: none;">
+            <h2>Welcome <span id="passkey-username"></span></h2>
+            <div id="user-photo" style="display: none;">
+                <img src="/api/placeholder/100/100" alt="User Photo">
+            </div>
+            <h3>Set Up Your Passkey</h3>
+            <div id="passkey-input"></div>
+            <div id="passkey-keyboard"></div>
+            <button class="login-btn" onclick="submitPasskey()">SUBMIT</button>
+        </div>
+
+        <!-- Homepage Container -->
+        <div id="homepage-container" style="display: none;">
+            <!-- Header Section -->
+            <header>
+                <div class="header-left">
+                    <img src="https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png" alt="KA Payments Logo">
+                    <h1>KA Payments</h1>
+                </div>
+                <div class="header-right">
+                    <img id="header-user-photo" src="/api/placeholder/100/100" alt="Profile Picture">
+                    <span id="header-username">User</span>
+                  
+                    <div id="clock" class="time">00:00:00</div>
+                    
+                </div>
+            </header>
+
+            <!-- Main Section -->
+            <div class="main-section">
+                <!-- Cards will be dynamically added here -->
+            </div>
+
+            <!-- Fixed Footer -->
+            <div class="fixed-footer">
+                <button onclick="quickAction()">Quick Action</button>
+            </div>
+        </div>
+
+        <!-- Section Container -->
+        <div id="section-container" class="section-container" style="display: none;">
+            <header>
+                <button class="back-button" onclick="goBack()">←</button>
+                <h1 id="section-title">Section Title</h1>
+            </header>
+            <div class="section-content">
+                <h2 id="section-message">Coming Soon</h2>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="loading.js"></script>
+    <script src="auth.js"></script>
+    <script src="main.js"></script>
+    <script src="homepage.js"></script>
+    <script src="partyledger.js"></script>
+    <script src="billentry.js"></script>
+    <script src="paymententry.js"></script>
+</body>
+</html>
