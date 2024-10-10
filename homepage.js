@@ -233,6 +233,12 @@ document.addEventListener('DOMContentLoaded', function() {
     e.preventDefault();
   });
 
+
+// Prevent long-touch from triggering
+document.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+}, { passive: false });
+
 // Prevent default touch behavior
   document.addEventListener('touchstart', function(e) {
     e.preventDefault();
