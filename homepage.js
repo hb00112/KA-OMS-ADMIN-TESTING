@@ -244,3 +244,15 @@ document.addEventListener('touchstart', function(e) {
     e.preventDefault();
   }, { passive: false });
 });
+
+function disableContextMenu(e) {
+    e.preventDefault();
+    return false;
+}
+
+document.addEventListener('contextmenu', disableContextMenu);
+document.body.style.userSelect = 'none';
+document.body.style.webkitUserSelect = 'none';
+document.body.style.msUserSelect = 'none';
+document.body.style.mozUserSelect = 'none';
+
