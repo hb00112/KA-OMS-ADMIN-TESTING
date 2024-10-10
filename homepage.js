@@ -38,22 +38,22 @@ const cardData = [
     },
 ];
 
+// Initialize homepage
 function initializeHomepage() {
     const mainSection = document.querySelector('.main-section');
-    mainSection.innerHTML = '';
+    mainSection.innerHTML = ''; // Clear existing content
 
+    // Create cards
     cardData.forEach(card => {
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
         cardElement.onclick = () => showSection(card.title);
         
-        // Create image element with additional attributes and styles
+        // Create image element
         const imgElement = document.createElement('img');
         imgElement.src = card.logo;
         imgElement.alt = `${card.title} icon`;
         imgElement.className = 'card-logo';
-        imgElement.draggable = false;
-        imgElement.style.pointerEvents = 'none'; // Prevents all mouse interactions
         
         cardElement.appendChild(imgElement);
         cardElement.innerHTML += `
@@ -63,12 +63,15 @@ function initializeHomepage() {
         mainSection.appendChild(cardElement);
     });
 
+    // Update header username
     document.getElementById('header-username').textContent = currentUser;
     
+    // Start clock
     updateTime();
     setInterval(updateTime, 1000);
 }
 
+// Update time
 function updateTime() {
     const now = new Date();
     let hours = now.getHours();
@@ -84,6 +87,7 @@ function updateTime() {
     document.getElementById('clock').textContent = timeString;
 }
 
+// Show section
 async function showSection(sectionName) {
     document.getElementById('homepage-container').style.display = 'none';
     const sectionContainer = document.getElementById('section-container');
@@ -91,7 +95,7 @@ async function showSection(sectionName) {
     document.getElementById('section-title').textContent = sectionName;
     
     const sectionContent = document.querySelector('.section-content');
-    sectionContent.innerHTML = '';
+    sectionContent.innerHTML = ''; // Clear previous content
     
     try {
         switch(sectionName) {
@@ -103,7 +107,58 @@ async function showSection(sectionName) {
                 `;
                 await initializePartyLedger();
                 break;
-            // ... other cases remain the same
+
+            case 'Bill Entry':
+                initializeBillEntry();
+                break;
+
+            case 'Payment Entry':
+                initializePaymentEntry();
+                break;
+
+            case 'CN Entry':
+                sectionContent.innerHTML = `
+                    <div class="coming-soon-message">
+                        <h2>Credit Note Entry</h2>
+                        <p>This feature is coming soon. Stay tuned!</p>
+                    </div>
+                `;
+                break;
+
+            case 'Outstanding':
+                sectionContent.innerHTML = `
+                    <div class="coming-soon-message">
+                        <h2>Outstanding Reports</h2>
+                        <p>This feature is coming soon. Check back later!</p>
+                    </div>
+                `;
+                break;
+
+            case 'Activity':
+                sectionContent.innerHTML = `
+                    <div class="coming-soon-message">
+                        <h2>Activity Logs</h2>
+                        <p>Activity tracking will be available soon.</p>
+                    </div>
+                `;
+                break;
+
+            case 'Deleted':
+                sectionContent.innerHTML = `
+                    <div class="coming-soon-message">
+                        <h2>Deleted Items</h2>
+                        <p>Deleted item recovery will be available in a future update.</p>
+                    </div>
+                `;
+                break;
+
+            default:
+                sectionContent.innerHTML = `
+                    <div class="coming-soon-message">
+                        <h2>${sectionName}</h2>
+                        <p>This section is under development.</p>
+                    </div>
+                `;
         }
     } catch (error) {
         console.error(`Error initializing ${sectionName}:`, error);
@@ -114,65 +169,59 @@ async function showSection(sectionName) {
             </div>
         `;
     }
+
+    // Add error handling for required functions
+    if (sectionName === 'Party Ledgers' && typeof initializePartyLedger !== 'function') {
+        console.error('initializePartyLedger function is not defined');
+    }
+    if (sectionName === 'Bill Entry' && typeof initializeBillEntry !== 'function') {
+        console.error('initializeBillEntry function is not defined');
+    }
+    if (sectionName === 'Payment Entry' && typeof initializePaymentEntry !== 'function') {
+        console.error('initializePaymentEntry function is not defined');
+    }
 }
 
+// Helper function to create a loading indicator
+function showLoadingIndicator(sectionContent) {
+    sectionContent.innerHTML = `
+        <div class="loading-indicator">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    `;
+}
+
+// Go back to homepage
 function goBack() {
     document.getElementById('section-container').style.display = 'none';
     document.getElementById('homepage-container').style.display = 'block';
+    // Clear the section content when going back to the homepage
     document.querySelector('.section-content').innerHTML = '';
 }
 
+// Quick action function
 function quickAction() {
     alert('Quick Action Triggered');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Comprehensive event prevention
-    const preventDefaultEvents = [
-        'contextmenu', 'selectstart', 'copy', 'cut', 'paste',
-        'dragstart', 'drop', 'touchstart', 'touchmove'
-    ];
+    // Prevent copy and paste
+    document.addEventListener('copy', function(e) {
+        e.preventDefault();
+    });
     
-    preventDefaultEvents.forEach(eventType => {
-        document.addEventListener(eventType, (e) => {
+    document.addEventListener('paste', function(e) {
+        e.preventDefault();
+    });
+    
+    // Prevent context menu only for images
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName === 'IMG') {
             e.preventDefault();
             return false;
-        }, { passive: false });
-    });
-
-    // Disable text selection across different browsers
-    const userSelectProperties = [
-        'userSelect', 'webkitUserSelect', 'msUserSelect', 
-        'mozUserSelect', 'khtmlUserSelect'
-    ];
-    
-    userSelectProperties.forEach(property => {
-        document.body.style[property] = 'none';
-    });
-
-    // Disable image dragging and context menu
-    document.querySelectorAll('img').forEach(img => {
-        img.draggable = false;
-        img.style.pointerEvents = 'none';
-        img.addEventListener('contextmenu', (e) => e.preventDefault());
-    });
-
-    // Add CSS to prevent text selection and highlighting
-    const style = document.createElement('style');
-    style.textContent = `
-        * {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
         }
-        img {
-            pointer-events: none;
-            -webkit-user-drag: none;
-            user-drag: none;
-        }
-    `;
-    document.head.appendChild(style);
+    });
+
+ 
 });
