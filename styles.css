@@ -7,6 +7,7 @@ body {
     height: 100vh;
     margin: 0;
     transition: background 0.5s ease;
+    padding-top: 60px;
 }
 
 html, body {
@@ -187,10 +188,13 @@ header {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 10px var(--shadow-color);
-    position: sticky;
+    position: fixed; /* Change to fixed */
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
 }
+
 
 .header-left {
     display: flex;
@@ -228,15 +232,14 @@ header {
     margin-top: 2px;
 }
 
-/* Main Section Grid */
 .main-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 15px;
     padding: 20px;
-margin-top: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    padding-top: 80px; /* Add padding to push content below fixed header */
 }
 
 /* Card Styles */
