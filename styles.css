@@ -445,3 +445,8 @@ margin-bottom: 50px;
     margin-bottom: 10px;
 }
 
+img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
