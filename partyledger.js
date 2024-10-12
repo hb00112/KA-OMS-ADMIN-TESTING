@@ -662,9 +662,7 @@ function searchParties(event) {
 }
 
 
-async function openPaymentRequestPopup(party) {
-    const pdfLink = await generateEntriesPDF(party.firebaseKey, party.name);
-    
+function openPaymentRequestPopup(party) {
     const popup = document.createElement('div');
     popup.className = 'payment-request-popup';
     popup.innerHTML = `
@@ -683,7 +681,7 @@ async function openPaymentRequestPopup(party) {
                 </button>
                 <button class="whatsapp-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                     </svg>
                     WhatsApp
                 </button>
@@ -701,56 +699,156 @@ async function openPaymentRequestPopup(party) {
     const smsButton = popup.querySelector('.sms-button');
     const whatsappButton = popup.querySelector('.whatsapp-button');
 
-    smsButton.addEventListener('click', () => sendPaymentRequest(party, 'sms', pdfLink));
-    whatsappButton.addEventListener('click', () => sendPaymentRequest(party, 'whatsapp', pdfLink));
+    smsButton.addEventListener('click', () => sendPaymentRequest(party, 'sms'));
+    whatsappButton.addEventListener('click', () => sendPaymentRequest(party, 'whatsapp'));
 }
 
-function sendPaymentRequest(party, method, pdfLink) {
+async function sendPaymentRequest(party, method) {
     const amount = document.getElementById('paymentAmount').value;
-    const message = `Dear ${party.name}, please pay ₹${amount} to our account. View your statement here: ${pdfLink}. Thank you.`;
+    
+    // Generate and upload the entries image
+    const imageUrl = await generateAndUploadEntriesImage(party);
+    
+    const message = `Dear Sir/Madam,
+Your Payment of ₹*${amount}* is pending at Kambeshwar Agencies
 
+click here: ${imageUrl}
+to view details`;
+
+    let url;
     if (method === 'sms') {
-        window.location.href = `sms:${party.mobile}?body=${encodeURIComponent(message)}`;
+        url = `sms:+91${party.mobile}?body=${encodeURIComponent(message)}`;
     } else if (method === 'whatsapp') {
-        window.open(`https://wa.me/919284494154?text=${encodeURIComponent(message)}`, '_blank');
+        url = `https://wa.me/91${party.mobile}?text=${encodeURIComponent(message)}`;
     }
+
+    window.open(url, '_blank');
 
     const popup = document.querySelector('.payment-request-popup');
     document.body.removeChild(popup);
 }
 
+async function generateAndUploadEntriesImage(party) {
+    // Create a canvas element to draw the entries
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-async function generateEntriesPDF(partyKey, partyName) {
-    const entries = await fetchEntriesFromFirebase('all', partyKey);
-    
-    // Create a new jsPDF instance
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Add title
-    doc.setFontSize(18);
-    doc.text(`Entries for ${partyName}`, 14, 20);
-    
-    // Add entries
-    doc.setFontSize(12);
-    let y = 30;
-    entries.forEach((entry, index) => {
-        if (y > 280) {
-            doc.addPage();
-            y = 20;
+    // Set canvas size (adjust as needed)
+    canvas.width = 800;
+    const entryHeight = 120; // Approximate height for each entry
+    const headerHeight = 60;
+    const padding = 20;
+
+    // Fetch entries
+    const entries = await fetchEntriesFromFirebase('all', party.firebaseKey);
+    canvas.height = headerHeight + (entries.length * entryHeight) + (padding * 2);
+
+    // Set background color
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw heading
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 24px Arial';
+    ctx.fillText(`${party.name} - ${party.station}`, padding, 40);
+
+    // Draw header
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, headerHeight, canvas.width, 40);
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('Date', padding, headerHeight + 25);
+    ctx.fillText('Type', 200, headerHeight + 25);
+    ctx.fillText('DR', canvas.width - 200, headerHeight + 25);
+    ctx.fillText('CR', canvas.width - 100, headerHeight + 25);
+
+    // Draw entries
+    let y = headerHeight + 40;
+    entries.forEach(entry => {
+        // Entry background
+        ctx.fillStyle = '#f9f9f9';
+        ctx.fillRect(0, y, canvas.width, entryHeight);
+        
+        // Date
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, y, canvas.width, 30);
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText(formatDate(entry.date), padding, y + 20);
+
+        // Type and detail
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText(getEntryTypeLabel(entry.type), padding, y + 50);
+        ctx.font = '12px Arial';
+        ctx.fillStyle = '#666666';
+        ctx.fillText(getEntryDetail(entry), padding, y + 70);
+
+        // Amount
+        ctx.font = 'bold 14px Arial';
+        if (entry.type === 'bill' || entry.type === 'opening_balance') {
+            ctx.fillStyle = '#d32f2f';
+            ctx.fillText(`₹${getEntryAmount(entry)}`, canvas.width - 100, y + 60);
+        } else {
+            ctx.fillStyle = '#388e3c';
+            ctx.fillText(`₹${getEntryAmount(entry)}`, canvas.width - 200, y + 60);
         }
-        doc.text(`${index + 1}. ${formatDate(entry.date)} - ${getEntryTypeLabel(entry.type)} - ${getEntryDetail(entry)}`, 14, y);
-        y += 10;
+
+        y += entryHeight;
     });
+
+    // Convert canvas to blob
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+    // Upload to Cloudinary
+    const formData = new FormData();
+    formData.append('file', blob, 'entries.png');
+    formData.append('api_key', '319994322683626');
+
+    // Generate timestamp and signature for authentication
+    const timestamp = Math.round((new Date).getTime()/1000);
+    formData.append('timestamp', timestamp);
     
-    // Generate PDF blob
-    const pdfBlob = doc.output('blob');
+    const signature = await generateCloudinarySignature(timestamp);
+    formData.append('signature', signature);
+
+    const response = await fetch('https://api.cloudinary.com/v1_1/dhuhvfubv/image/upload', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await response.json();
+    return data.secure_url;
+}
+
+function getEntryAmount(entry) {
+    switch (entry.type) {
+        case 'opening_balance':
+            return entry.amount.toFixed(2);
+        case 'bill':
+            return entry.totalAmount.toFixed(2);
+        case 'cn':
+            return entry.cnAmount.toFixed(2);
+        case 'payment':
+            return entry.amountPaid.toFixed(2);
+        default:
+            return '0.00';
+    }
+}
+
+// ... (keep the other functions as they were)
+
+async function generateCloudinarySignature(timestamp) {
+    const apiSecret = 'qGAcJummXjiu-HyDBxWsGO_ncvU';
+    const stringToSign = `timestamp=${timestamp}${apiSecret}`;
     
-    const storageRef = firebase.storage().ref(`entry_pdfs/${partyKey}_${Date.now()}.pdf`);
-    await storageRef.put(pdfBlob);
+    // Use SubtleCrypto API to generate SHA-1 hash
+    const encoder = new TextEncoder();
+    const data = encoder.encode(stringToSign);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
     
-    // Get download URL
-    const downloadURL = await storageRef.getDownloadURL();
+    // Convert hash to hex string
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     
-    return downloadURL;
+    return hashHex;
 }
