@@ -759,8 +759,8 @@ async function generateAndUploadEntriesImage(party) {
     ctx.font = 'bold 16px Arial';
     ctx.fillText('Date', padding, headerHeight + 25);
     ctx.fillText('Type', 200, headerHeight + 25);
-    ctx.fillText('DR', canvas.width - 200, headerHeight + 25);
-    ctx.fillText('CR', canvas.width - 100, headerHeight + 25);
+    ctx.fillText('CR', canvas.width - 200, headerHeight + 25);
+    ctx.fillText('DR', canvas.width - 100, headerHeight + 25);
 
     // Draw entries
     let y = headerHeight + 40;
