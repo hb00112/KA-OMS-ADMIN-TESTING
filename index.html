@@ -110,5 +110,68 @@
     <script src="billentry.js"></script>
     <script src="paymententry.js"></script>
     <script src="cn.js"></script>
+<script>
+    // MagicBell configuration
+    const API_KEY = '25b815a7c88e6c6bfd5986a0954845d1a806d910';
+    const USER_EMAIL = 'himanshuborana82@gmail.com';
+
+    // Function to request notification permission
+    async function requestNotificationPermission() {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            registerServiceWorker();
+        } else {
+            console.log('Notification permission denied');
+        }
+    }
+
+    // Function to register service worker
+    async function registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register('/service-worker.js');
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: await getVapidPublicKey(),
+                });
+                
+                await setSubscription(subscription);
+                console.log('Push notification subscription successful');
+            } catch (error) {
+                console.error('Error registering service worker:', error);
+            }
+        }
+    }
+
+    // Function to get VAPID public key
+    async function getVapidPublicKey() {
+        try {
+            const response = await axios.get(`https://api.magicbell.com/vapid_public_key`, {
+                headers: { 'X-MAGICBELL-API-KEY': API_KEY }
+            });
+            return response.data.vapid_public_key;
+        } catch (error) {
+            console.error('Error fetching VAPID public key:', error);
+        }
+    }
+
+    // Function to set subscription
+    async function setSubscription(subscription) {
+        try {
+            await axios.post(`https://api.magicbell.com/push_subscriptions`, {
+                web_push_subscription: subscription,
+                user: { email: USER_EMAIL }
+            }, {
+                headers: { 'X-MAGICBELL-API-KEY': API_KEY }
+            });
+            console.log('Subscription set successfully');
+        } catch (error) {
+            console.error('Error setting subscription:', error);
+        }
+    }
+
+    // Event listener for the enable notifications button
+    document.getElementById('enableNotifications').addEventListener('click', requestNotificationPermission);
+    </script>
 </body>
 </html>
