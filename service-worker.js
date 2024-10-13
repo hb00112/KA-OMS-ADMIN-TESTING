@@ -23,24 +23,3 @@ self.addEventListener('fetch', event => {
       .then(response => response || fetch(event.request))
   );
 });
-
-self.addEventListener('push', function(event) {
-    const data = event.data.json();
-    const options = {
-        body: data.content,
-        icon: 'https://i.postimg.cc/c1nTCZB7/Add-a-subheading.png', // Replace with your own icon
-        badge: 'https://i.postimg.cc/c1nTCZB7/Add-a-subheading.png', // Replace with your own badge
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
-    );
-});
-
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    // Handle notification click (e.g., open a specific page)
-    event.waitUntil(
-        clients.openWindow('https://your-app-url.com')
-    );
-});
