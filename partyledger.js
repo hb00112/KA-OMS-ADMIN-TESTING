@@ -275,7 +275,7 @@ function openPartySection(party) {
                 <span class="party-balance-amount">₹${party.balance}</span>
             </div>
             <div class="party-button-container">
-                <a href="#" class="party-button">
+                <a href="#" class="party-button" id="reportButton">
                     <div class="party-button-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -296,7 +296,7 @@ function openPartySection(party) {
                     </div>
                     <span class="party-button-label">Payment</span>
                 </a>
-                <a href="#" class="party-button">
+                <a href="#" class="party-button" id="reminderButton">
                     <div class="party-button-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 11l18-5v12L3 14v-3z"></path>
@@ -305,7 +305,7 @@ function openPartySection(party) {
                     </div>
                     <span class="party-button-label">Reminder</span>
                 </a>
-                <a href="#" class="party-button">
+                <a href="#" class="party-button" id="smsButton">
                     <div class="party-button-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -330,13 +330,52 @@ function openPartySection(party) {
         document.body.removeChild(section);
     });
 
+    const reportButton = section.querySelector('#reportButton');
     const paymentButton = section.querySelector('#paymentButton');
+    const reminderButton = section.querySelector('#reminderButton');
+    const smsButton = section.querySelector('#smsButton');
+
+    reportButton.addEventListener('click', () => {
+        // Implement report functionality here
+        console.log('Report button clicked');
+    });
+
     paymentButton.addEventListener('click', () => openPaymentRequestPopup(party));
+
+    reminderButton.addEventListener('click', () => sendReminder(party, 'whatsapp'));
+    smsButton.addEventListener('click', () => sendReminder(party, 'sms'));
 
     // Initial display of all entries
     displayEntries('all', party.firebaseKey);
 }
 
+async function sendReminder(party, method) {
+    try {
+        // Generate and upload the entries image
+        const imageUrl = await generateAndUploadEntriesImage(party);
+        
+        const message = `Dear Sir/Madam,
+Your payment of ₹${party.balance.toFixed(2)} 
+is pending at Kambeshwar Agencies
+click here: ${imageUrl}
+to view the details
+
+with regards,
+Kambeshwar Agencies`;
+
+        let url;
+        if (method === 'sms') {
+            url = `sms:+91${party.mobile}?body=${encodeURIComponent(message)}`;
+        } else if (method === 'whatsapp') {
+            url = `https://wa.me/91${party.mobile}?text=${encodeURIComponent(message)}`;
+        }
+
+        window.open(url, '_blank');
+    } catch (error) {
+        console.error('Error sending reminder:', error);
+        alert('There was an error sending the reminder. Please try again.');
+    }
+}
 
 function displayEntries(type, partyKey) {
     const entriesContainer = document.getElementById('party-entries-container');
@@ -732,110 +771,217 @@ async function generateAndUploadEntriesImage(party) {
     // Create a canvas element to draw the entries
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
-    // Set canvas size (adjust as needed)
-    canvas.width = 800;
-    const entryHeight = 120; // Approximate height for each entry
-    const headerHeight = 60;
-    const padding = 20;
-
+    
+    // Set canvas size and styles
+    canvas.width = 650; // Increased width to accommodate centered table
+    const headerHeight = 200;
+    const footerHeight = 80;
+    const rowHeight = 30;
+    const padding = 10;
+    
     // Fetch entries
     const entries = await fetchEntriesFromFirebase('all', party.firebaseKey);
-    canvas.height = headerHeight + (entries.length * entryHeight) + (padding * 2);
-
+    
+    // Add opening balance entry
+    const openingBalanceEntry = {
+        type: 'opening_balance',
+        date: party.openingBalanceDate || '01 Apr 2024',
+        amount: party.openingBalance || 0
+    };
+    entries.unshift(openingBalanceEntry);
+    
+    canvas.height = headerHeight + (entries.length * rowHeight) + footerHeight + (padding * 2);
+    
     // Set background color
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw heading
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 24px Arial';
-    ctx.fillText(`${party.name} - ${party.station}`, padding, 40);
-
+    
+    // Load Poppins font (you need to ensure this font is available)
+    const poppins = new FontFace('Poppins', 'url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJfecg.woff2)');
+    await poppins.load();
+    document.fonts.add(poppins);
+    
     // Draw header
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, headerHeight, canvas.width, 40);
+    ctx.fillStyle = '#800080'; // Purple color for text
+    ctx.font = 'bold 24px Poppins';
+    ctx.textAlign = 'center';
+    ctx.fillText('KAMBESHWAR AGENCIES', canvas.width / 2, 35);
+    
     ctx.fillStyle = '#000000';
-    ctx.font = 'bold 16px Arial';
-    ctx.fillText('Date', padding, headerHeight + 25);
-    ctx.fillText('Type', 200, headerHeight + 25);
-    ctx.fillText('CR', canvas.width - 200, headerHeight + 25);
-    ctx.fillText('DR', canvas.width - 100, headerHeight + 25);
-
+    ctx.font = '18px Poppins';
+    ctx.fillText('Mapusa Goa', canvas.width / 2, 70);
+    
+    // Draw lines
+    function drawLine(y) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+    
+    drawLine(80);
+    
+    // Draw party details
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 14px Poppins';
+    ctx.fillText(`Party Name: ${party.name}`, padding, 100);
+    ctx.fillText(`Mobile: ${party.mobile}`, padding, 120);
+    ctx.fillText(`Station: ${party.station || 'N/A'}`, padding, 140);
+    
+    drawLine(150);
+    
+    // Draw "LEDGER DETAILS"
+    ctx.fillStyle = '#F8E1FF'; // Light pink color
+    ctx.fillRect(0, 151, canvas.width, 28);
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 16px Poppins';
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '2px'; // Increased letter spacing
+    ctx.fillText('LEDGER DETAILS', canvas.width / 2, 170);
+    ctx.letterSpacing = '0px'; // Reset letter spacing
+    
+    drawLine(180);
+    
+    // Draw table
+    function drawTable(x, y, width, height) {
+        ctx.strokeRect(x, y, width, height);
+    }
+    
+    // Calculate table dimensions and position
+    const tableWidth = 550; // Total width of the table
+    const tableX = (canvas.width - tableWidth) / 2; // Center the table horizontally
+    
+    // Draw table header
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(tableX, headerHeight, tableWidth, rowHeight);
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 14px Poppins';
+    ctx.textAlign = 'left';
+    
+    const colWidths = [80, 240, 100, 130];
+    let xPos = tableX;
+    ['Date', 'Description', 'Amount', 'Balance'].forEach((header, index) => {
+        drawTable(xPos, headerHeight, colWidths[index], rowHeight);
+        ctx.fillText(header, xPos + 5, headerHeight + 20);
+        xPos += colWidths[index];
+    });
+    
     // Draw entries
-    let y = headerHeight + 40;
+    let y = headerHeight + rowHeight;
+    let balance = 0;
     entries.forEach(entry => {
-        // Entry background
-        ctx.fillStyle = '#f9f9f9';
-        ctx.fillRect(0, y, canvas.width, entryHeight);
+        xPos = tableX;
+        ctx.font = '12px Poppins';
+        ctx.fillStyle = '#000000';
         
         // Date
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, y, canvas.width, 30);
-        ctx.fillStyle = '#000000';
-        ctx.font = 'bold 14px Arial';
-        ctx.fillText(formatDate(entry.date), padding, y + 20);
-
-        // Type and detail
-        ctx.font = 'bold 14px Arial';
-        ctx.fillText(getEntryTypeLabel(entry.type), padding, y + 50);
-        ctx.font = '12px Arial';
-        ctx.fillStyle = '#666666';
-        ctx.fillText(getEntryDetail(entry), padding, y + 70);
-
+        drawTable(xPos, y, colWidths[0], rowHeight);
+        ctx.fillText(formatDate(entry.date), xPos + 5, y + 20);
+        xPos += colWidths[0];
+        
+        // Description
+        drawTable(xPos, y, colWidths[1], rowHeight);
+        ctx.fillText(getEntryDescription(entry), xPos + 5, y + 20);
+        xPos += colWidths[1];
+        
         // Amount
-        ctx.font = 'bold 14px Arial';
-        if (entry.type === 'bill' || entry.type === 'opening_balance') {
-            ctx.fillStyle = '#d32f2f';
-            ctx.fillText(`₹${getEntryAmount(entry)}`, canvas.width - 100, y + 60);
-        } else {
-            ctx.fillStyle = '#388e3c';
-            ctx.fillText(`₹${getEntryAmount(entry)}`, canvas.width - 200, y + 60);
-        }
-
-        y += entryHeight;
+        drawTable(xPos, y, colWidths[2], rowHeight);
+        const amount = getEntryAmount(entry);
+        ctx.fillStyle = entry.type === 'bill' || entry.type === 'opening_balance' ? '#388e3c' : '#d32f2f';
+        ctx.fillText(`₹${Math.abs(amount).toFixed(2)}`, xPos + 5, y + 20);
+        xPos += colWidths[2];
+        
+        // Balance
+        drawTable(xPos, y, colWidths[3], rowHeight);
+        balance += amount;
+        ctx.fillStyle = '#000000';
+        ctx.fillText(`₹${balance.toFixed(2)}`, xPos + 5, y + 20);
+        
+        y += rowHeight;
     });
-
+    
+    // Draw footer
+    y += 20; // Add space below the table
+    drawLine(y);
+    
+    ctx.fillStyle = '#F8E1FF'; // Light pink color
+    ctx.fillRect(0, y + 1, canvas.width, 28);
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 16px Poppins';
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '2px'; // Increased letter spacing
+    ctx.fillText(`Dr Bal. ₹${balance.toFixed(2)}`, canvas.width / 2, y + 20);
+    ctx.letterSpacing = '0px'; // Reset letter spacing
+    
+    drawLine(y + 30);
+    
     // Convert canvas to blob
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-
-    // Upload to Cloudinary
+    
+    // Cloudinary upload configuration
+    const cloudName = 'dhuhvfubv';
+    const apiKey = '319994322683626';
+    
+    // Create FormData and append necessary fields
     const formData = new FormData();
-    formData.append('file', blob, 'entries.png');
-    formData.append('api_key', '319994322683626');
-
+    formData.append('file', blob, 'ledger.png');
+    formData.append('api_key', apiKey);
+    
     // Generate timestamp and signature for authentication
     const timestamp = Math.round((new Date).getTime()/1000);
     formData.append('timestamp', timestamp);
-    
     const signature = await generateCloudinarySignature(timestamp);
     formData.append('signature', signature);
+    
+    try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.secure_url;
+    } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        throw error;
+    }
+}
 
-    const response = await fetch('https://api.cloudinary.com/v1_1/dhuhvfubv/image/upload', {
-        method: 'POST',
-        body: formData
-    });
 
-    const data = await response.json();
-    return data.secure_url;
+
+function getEntryDescription(entry) {
+    switch (entry.type) {
+        case 'opening_balance':
+            return 'Opening Balance';
+        case 'bill':
+            return `Sale Bill: ${entry.billNo}`;
+        case 'cn':
+            return `Credit Note: ${entry.cnNo}`;
+        case 'payment':
+            return `Payment: ${entry.paymentMode} ${entry.voucherNo}`;
+        default:
+            return 'Unknown';
+    }
 }
 
 function getEntryAmount(entry) {
     switch (entry.type) {
         case 'opening_balance':
-            return entry.amount.toFixed(2);
+            return entry.amount;
         case 'bill':
-            return entry.totalAmount.toFixed(2);
+            return entry.totalAmount;
         case 'cn':
-            return entry.cnAmount.toFixed(2);
+            return -entry.cnAmount; // Negative amount for credit notes
         case 'payment':
-            return entry.amountPaid.toFixed(2);
+            return -entry.amountPaid; // Negative amount for payments
         default:
-            return '0.00';
+            return 0;
     }
 }
-
-// ... (keep the other functions as they were)
 
 async function generateCloudinarySignature(timestamp) {
     const apiSecret = 'qGAcJummXjiu-HyDBxWsGO_ncvU';
@@ -852,3 +998,4 @@ async function generateCloudinarySignature(timestamp) {
     
     return hashHex;
 }
+
