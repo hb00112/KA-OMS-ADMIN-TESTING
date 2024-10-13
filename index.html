@@ -14,9 +14,9 @@
     <link rel="manifest" href="manifest.json">
    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
-  window.OneSignal = window.OneSignal || [];
-  OneSignal.push(function() {
-    OneSignal.init({
+ window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
       appId: "19a944ff-c668-4b2d-811d-1d45f4a8be09",
       safari_web_id: "web.onesignal.auto.12f40fc9-13d7-4ca9-8e4a-0a7d50f473bf",
       notifyButton: {
