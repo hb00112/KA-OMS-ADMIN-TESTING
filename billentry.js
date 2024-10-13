@@ -214,6 +214,10 @@ async function saveBill() {
         await billRef.set({ ...billData, partyKey });
 
         console.log('Bill saved successfully');
+        
+        // Send OneSignal notification
+        await sendBillSavedNotification(billData.partyName, billData.totalAmount);
+
         closeBillEntryModal();
         loadBillData(); // Refresh the bill list
     } catch (error) {
@@ -221,6 +225,32 @@ async function saveBill() {
     }
 }
 
+async function sendBillSavedNotification(partyName, totalAmount) {
+    const notificationData = {
+        app_id: "19a944ff-c668-4b2d-811d-1d45f4a8be09",
+        contents: {"en": `New bill saved for ${partyName} with total amount ${totalAmount}`},
+        included_segments: ["All"]
+    };
+
+    try {
+        const response = await fetch('https://onesignal.com/api/v1/notifications', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic Nzc0ZjM2NjYtOTkwOC00ZTRkLTlhYTAtZDQ5OTAyZTc2MTVm'
+            },
+            body: JSON.stringify(notificationData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send bill saved notification');
+        }
+
+        console.log('Bill saved notification sent successfully');
+    } catch (error) {
+        console.error('Error sending bill saved notification:', error);
+    }
+}
 function closeBillEntryModal() {
     const modal = document.querySelector('.bill-entry-modal');
     if (modal) {
