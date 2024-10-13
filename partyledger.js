@@ -180,8 +180,7 @@ async function saveNewParty(event) {
     
     const openingBalance = parseFloat(document.getElementById('partyBalance').value);
     
-    // Format the date as "01 Apr 2024"
-    const openingBalanceDate = new Date(2024, 3, 1); // Note: Month is 0-indexed, so 3 is April
+    const openingBalanceDate = new Date(2024, 3, 1);
     const formattedDate = openingBalanceDate.toLocaleDateString('en-GB', { 
         day: '2-digit', 
         month: 'short', 
@@ -212,12 +211,41 @@ async function saveNewParty(event) {
         };
         await firebase.database().ref('transactions').push(openingBalanceEntry);
         
+        // Send OneSignal notification
+        await sendOneSignalNotification(partyData.name);
+        
         closeModal();
     } catch (error) {
         console.error('Error saving party:', error);
     }
 }
 
+async function sendOneSignalNotification(partyName) {
+    const notificationData = {
+        app_id: "19a944ff-c668-4b2d-811d-1d45f4a8be09",
+        contents: {"en": `New party "${partyName}" has been added!`},
+        included_segments: ["All"]
+    };
+
+    try {
+        const response = await fetch('https://onesignal.com/api/v1/notifications', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Nzc0ZjM2NjYtOTkwOC00ZTRkLTlhYTAtZDQ5OTAyZTc2MTVm'
+            },
+            body: JSON.stringify(notificationData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send notification');
+        }
+
+        console.log('Notification sent successfully');
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+}
 function displayParties(parties) {
     const partyList = document.getElementById('partyList');
     partyList.innerHTML = '';
@@ -383,6 +411,7 @@ function displayEntries(type, partyKey) {
 
     fetchEntriesFromFirebase(type, partyKey).then(entries => {
         let runningBalance = 0;
+        let actualBalance = 0;
         
         firebase.database().ref('parties').child(partyKey).once('value')
             .then(snapshot => {
@@ -391,39 +420,42 @@ function displayEntries(type, partyKey) {
                     const openingBalanceEntry = {
                         type: 'opening_balance',
                         amount: party.openingBalance,
-                        date: party.openingBalanceDate || '01 Apr 2024', // Use stored date or default
+                        date: party.openingBalanceDate || '01 Apr 2024',
                         id: 'opening_balance'
                     };
                     
-                    // Add opening balance to the beginning of the entries array
                     entries.unshift(openingBalanceEntry);
                     
                     // Sort entries by date, oldest first
                     entries.sort((a, b) => new Date(a.date) - new Date(b.date));
                     
-                    // Initialize running balance with opening balance
                     runningBalance = party.openingBalance;
+                    actualBalance = party.openingBalance;
                 }
                 
-                // Create a document fragment for better performance
                 const fragment = document.createDocumentFragment();
                 
-                // Calculate running balances
+                // Calculate running balances and actual balance
                 entries.forEach(entry => {
                     if (entry.type === 'bill') {
                         runningBalance += entry.totalAmount;
+                        actualBalance += entry.totalAmount;
                     } else if (entry.type === 'cn') {
                         runningBalance -= entry.cnAmount;
+                        actualBalance -= entry.cnAmount; // Subtract CN amount from actualBalance as well
                     } else if (entry.type === 'payment') {
                         runningBalance -= entry.amountPaid;
+                        actualBalance -= entry.amountPaid;
                     }
                     entry.runningBalance = runningBalance;
                 });
                 
+                // Update party balance with the latest actual balance
+                updatePartyBalance(partyKey, actualBalance);
+                
                 // Reverse the entries array to display most recent first
                 entries.reverse();
                 
-                // Display all entries
                 entries.forEach(entry => {
                     const entryElement = createEntryElement(entry);
                     fragment.appendChild(entryElement);
@@ -441,6 +473,25 @@ function displayEntries(type, partyKey) {
     });
 }
 
+function updatePartyBalance(partyKey, newBalance) {
+    return firebase.database().ref('parties').child(partyKey).update({
+        balance: newBalance
+    }).then(() => {
+        console.log('Updated balance for party', partyKey, ':', newBalance);
+        // Update the balance display in the UI
+        const balanceDisplay = document.querySelector('.party-balance-amount');
+        if (balanceDisplay) {
+            balanceDisplay.textContent = `₹${newBalance.toFixed(2)}`;
+        }
+        // Also update the balance in the party list if it exists
+        const partyListItem = document.querySelector(`[data-party-key="${partyKey}"] .party-balance`);
+        if (partyListItem) {
+            partyListItem.textContent = `₹${newBalance.toFixed(2)}`;
+        }
+    }).catch(error => {
+        console.error('Error updating party balance:', error);
+    });
+}
 // Fetch entries from Firebase
 function fetchEntriesFromFirebase(type, partyKey) {
     return new Promise((resolve, reject) => {
@@ -515,73 +566,6 @@ function fetchEntriesFromFirebase(type, partyKey) {
         });
     });
   }
-  
-  // Display entries
-/*  function displayEntries(type, partyKey) {
-    const entriesContainer = document.getElementById('party-entries-container');
-    entriesContainer.innerHTML = ''; // Clear previous entries
-
-    fetchEntriesFromFirebase(type, partyKey).then(entries => {
-        let balance = 0;
-        
-        firebase.database().ref('parties').child(partyKey).once('value')
-            .then(snapshot => {
-                const party = snapshot.val();
-                if (party && party.openingBalance !== undefined) {
-                    const openingBalanceEntry = {
-                        type: 'opening_balance',
-                        amount: party.openingBalance,
-                        date: '2024-04-01', // Fixed date for opening balance
-                        id: 'opening_balance'
-                    };
-                    
-                    // Add opening balance to the end of the entries array
-                    entries.push(openingBalanceEntry);
-                    
-                    // Sort entries by date, newest first
-                    entries.sort((a, b) => new Date(b.date) - new Date(a.date));
-                    
-                    // Initialize balance with opening balance
-                    balance = party.openingBalance;
-                }
-                
-                // Create a document fragment for better performance
-                const fragment = document.createDocumentFragment();
-                
-                // Display all entries
-                entries.forEach(entry => {
-                    const entryElement = createEntryElement(entry);
-                    
-                    // Update balance
-                    if (entry.type === 'bill') {
-                        balance += entry.totalAmount;
-                    } else if (entry.type === 'cn') {
-                        balance -= entry.cnAmount;
-                    } else if (entry.type === 'payment') {
-                        balance -= entry.amountPaid;
-                    }
-                    // Opening balance is already included in the initial balance
-                    
-                    // Add balance to the entry element
-                    const balanceElement = document.createElement('div');
-                    balanceElement.className = 'entry-balance';
-                    balanceElement.textContent = `₹${balance.toFixed(2)}`;
-                    entryElement.appendChild(balanceElement);
-                    
-                    fragment.insertBefore(entryElement, fragment.firstChild);
-                });
-                
-                entriesContainer.appendChild(fragment);
-            })
-            .catch(error => {
-                console.error("Error fetching party data: ", error);
-                entriesContainer.innerHTML = '<p>Error loading entries. Please try again.</p>';
-            });
-    }).catch(error => {
-        console.error("Error displaying entries: ", error);
-        entriesContainer.innerHTML = '<p>Error loading entries. Please try again.</p>';
-    });
-}*/
 
 function createEntryElement(entry) {
     const entryElement = document.createElement('div');
@@ -589,7 +573,7 @@ function createEntryElement(entry) {
 
     const dateElement = document.createElement('div');
     dateElement.className = 'entry-date';
-    dateElement.textContent = entry.type === 'opening_balance' ? entry.date : formatDate(entry.date);
+    dateElement.textContent = formatDate(entry.date || entry.cnDate);
     entryElement.appendChild(dateElement);
 
     const detailsElement = document.createElement('div');
@@ -645,6 +629,7 @@ function createEntryElement(entry) {
 }
 
 
+
 function getEntryTypeLabel(type) {
     switch (type) {
         case 'opening_balance': return 'Opening Balance';
@@ -664,9 +649,13 @@ function getEntryDetail(entry) {
         default: return '';
     }
 }
-
 function formatDate(dateString) {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+        // If the date is invalid, return the original string
+        return dateString;
+    }
     return date.toLocaleDateString('en-GB', { 
         day: '2-digit', 
         month: 'short', 
