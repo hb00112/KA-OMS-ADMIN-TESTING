@@ -28,8 +28,8 @@ self.addEventListener('push', function(event) {
     const data = event.data.json();
     const options = {
         body: data.content,
-        icon: 'https://via.placeholder.com/128', // Replace with your own icon
-        badge: 'https://via.placeholder.com/128', // Replace with your own badge
+        icon: 'https://i.postimg.cc/c1nTCZB7/Add-a-subheading.png', // Replace with your own icon
+        badge: 'https://i.postimg.cc/c1nTCZB7/Add-a-subheading.png', // Replace with your own badge
     };
 
     event.waitUntil(
