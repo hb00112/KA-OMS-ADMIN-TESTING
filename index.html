@@ -15,21 +15,7 @@
 
 </head>
 <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" defer></script>
-<script>
-    window.OneSignal = window.OneSignal || [];
-OneSignal.push(function() {
-    OneSignal.init({
-        appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d",
-    });
-});
 
-function subscribeToNotifications() {
-    OneSignal.push(function() {
-        OneSignal.showNativePrompt();
-    });
-}
-
-</script>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen" class="loader-container">
