@@ -15,7 +15,18 @@
 
 </head>
 <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-
+<script>
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+        OneSignal.SERVICE_WORKER_UPDATER_PATH = "OneSignalSDKUpdaterWorker.js";
+        OneSignal.SERVICE_WORKER_PATH = "OneSignalSDKWorker.js";
+        OneSignal.SERVICE_WORKER_PARAM = { scope: '/' };
+        OneSignal.init({
+            appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d",
+            allowLocalhostAsSecureOrigin: true, // Remove this in production
+        });
+    });
+</script>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen" class="loader-container">
