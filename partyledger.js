@@ -221,25 +221,21 @@ async function saveNewParty(event) {
 }
 
 // Function to send OneSignal notification
+// Function to send OneSignal notification
 async function sendOneSignalNotification(partyName) {
+    if (typeof OneSignal === 'undefined') {
+        console.warn('OneSignal is not loaded. Unable to send notification.');
+        return;
+    }
+    
     try {
-        await OneSignal.init({ appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d" });
-        await OneSignal.showSlidedownPrompt();
-        
-        const notificationObj = {
+        await OneSignal.postNotification({
             contents: {
-                'en': `New party added: ${partyName}`
+                en: `New party added: ${partyName}`
             },
             included_segments: ['All']
-        };
-        
-        await OneSignal.sendSelfNotification(
-            notificationObj.contents,
-            null,
-            null,
-            null,
-            notificationObj.included_segments
-        );
+        });
+        console.log('Notification sent successfully');
     } catch (error) {
         console.error('Error sending OneSignal notification:', error);
     }
@@ -986,22 +982,54 @@ async function generateCloudinarySignature(timestamp) {
     
     return hashHex;
 }
+document.addEventListener('DOMContentLoaded', function() {
+    initializeOneSignal();
+    // Add a button or some UI element to trigger subscription
+    const subscribeButton = document.getElementById('subscribe-button');
+    if (subscribeButton) {
+        subscribeButton.addEventListener('click', subscribeToNotifications);
+    }
+});
 
+// OneSignal Initialization
 function initializeOneSignal() {
     if (typeof OneSignal === 'undefined') {
         console.warn('OneSignal is not loaded. Make sure the script is included properly.');
         return;
     }
     
-    window.OneSignal = window.OneSignal || [];
     OneSignal.push(function() {
         OneSignal.init({
             appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d",
+            notifyButton: {
+                enable: true,
+            },
+            allowLocalhostAsSecureOrigin: true, // Remove this in production
+        });
+        
+        OneSignal.on('subscriptionChange', function (isSubscribed) {
+            console.log("The user's subscription state is now:", isSubscribed);
+        });
+        
+        OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+            if (isEnabled) {
+                console.log("Push notifications are enabled!");
+            } else {
+                console.log("Push notifications are not enabled yet.");
+            }
         });
     });
 }
+
+// Function to subscribe to notifications
 function subscribeToNotifications() {
+    if (typeof OneSignal === 'undefined') {
+        console.warn('OneSignal is not loaded. Unable to subscribe.');
+        return;
+    }
+    
     OneSignal.push(function() {
-        OneSignal.showNativePrompt();
+        OneSignal.registerForPushNotifications();
+        OneSignal.setSubscription(true);
     });
 }
