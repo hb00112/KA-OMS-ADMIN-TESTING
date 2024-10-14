@@ -982,41 +982,33 @@ async function generateCloudinarySignature(timestamp) {
     
     return hashHex;
 }
-document.addEventListener('DOMContentLoaded', function() {
-    initializeOneSignal();
-    // Add a button or some UI element to trigger subscription
-    const subscribeButton = document.getElementById('subscribe-button');
-    if (subscribeButton) {
-        subscribeButton.addEventListener('click', subscribeToNotifications);
-    }
-});
+
 
 // OneSignal Initialization
 function initializeOneSignal() {
     if (typeof OneSignal === 'undefined') {
-        console.warn('OneSignal is not loaded. Make sure the script is included properly.');
+        console.error('OneSignal is not loaded. Make sure the script is included properly.');
         return;
     }
     
     OneSignal.push(function() {
+        console.log('Initializing OneSignal...');
         OneSignal.init({
             appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d",
             notifyButton: {
                 enable: true,
             },
             allowLocalhostAsSecureOrigin: true, // Remove this in production
+        }).then(() => {
+            console.log('OneSignal initialization successful');
+            checkSubscriptionStatus();
+        }).catch(error => {
+            console.error('Error initializing OneSignal:', error);
         });
         
         OneSignal.on('subscriptionChange', function (isSubscribed) {
             console.log("The user's subscription state is now:", isSubscribed);
-        });
-        
-        OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-            if (isEnabled) {
-                console.log("Push notifications are enabled!");
-            } else {
-                console.log("Push notifications are not enabled yet.");
-            }
+            checkSubscriptionStatus();
         });
     });
 }
@@ -1024,12 +1016,104 @@ function initializeOneSignal() {
 // Function to subscribe to notifications
 function subscribeToNotifications() {
     if (typeof OneSignal === 'undefined') {
-        console.warn('OneSignal is not loaded. Unable to subscribe.');
+        console.error('OneSignal is not loaded. Unable to subscribe.');
         return;
     }
     
+    console.log('Attempting to subscribe to notifications...');
     OneSignal.push(function() {
-        OneSignal.registerForPushNotifications();
-        OneSignal.setSubscription(true);
+        Promise.all([
+            OneSignal.isPushNotificationsEnabled(),
+            OneSignal.getNotificationPermission(),
+            OneSignal.getUserId()
+        ]).then(([isPushEnabled, notificationPermission, userId]) => {
+            console.log('Push Enabled:', isPushEnabled);
+            console.log('Notification Permission:', notificationPermission);
+            console.log('User ID:', userId);
+            
+            if (isPushEnabled) {
+                console.log('Already subscribed to push notifications');
+            } else {
+                console.log('Prompting for push notification permission...');
+                return OneSignal.registerForPushNotifications();
+            }
+        }).then(() => {
+            console.log('Push notification registration successful');
+            return OneSignal.setSubscription(true);
+        }).then(() => {
+            console.log('Subscription successful');
+            checkSubscriptionStatus();
+        }).catch(error => {
+            console.error('Error during subscription process:', error);
+        });
+    });
+}
+
+// Function to check subscription status
+function checkSubscriptionStatus() {
+    OneSignal.push(function() {
+        Promise.all([
+            OneSignal.isPushNotificationsEnabled(),
+            OneSignal.getNotificationPermission(),
+            OneSignal.getUserId()
+        ]).then(([isPushEnabled, notificationPermission, userId]) => {
+            console.log('Current Subscription Status:');
+            console.log('- Push Enabled:', isPushEnabled);
+            console.log('- Notification Permission:', notificationPermission);
+            console.log('- User ID:', userId);
+        }).catch(error => {
+            console.error('Error checking subscription status:', error);
+        });
+    });
+}
+
+// Check if service worker is registered
+function checkServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            console.log('Service Worker Registrations:', registrations);
+            let oneSignalSWFound = registrations.some(reg => reg.scope.includes('OneSignalSDKWorker'));
+            console.log('OneSignal Service Worker found:', oneSignalSWFound);
+        });
+    } else {
+        console.log('Service workers are not supported');
+    }
+}
+
+// Initialize when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing OneSignal...');
+    initializeOneSignal();
+    
+    const subscribeButton = document.getElementById('subscribe-button');
+    if (subscribeButton) {
+        subscribeButton.addEventListener('click', subscribeToNotifications);
+    } else {
+        console.error('Subscribe button not found in the DOM');
+    }
+    
+    // Check service worker after a short delay
+    setTimeout(checkServiceWorker, 2000);
+});
+
+// Function to send OneSignal notification (for testing)
+function sendTestNotification() {
+    if (typeof OneSignal === 'undefined') {
+        console.error('OneSignal is not loaded. Unable to send notification.');
+        return;
+    }
+    
+    console.log('Attempting to send test notification...');
+    OneSignal.push(function() {
+        OneSignal.sendSelfNotification(
+            "Test Notification",  // Title
+            "This is a test message", // Message
+            "https://example.com",  // URL (optional)
+            "https://example.com/icon.png"  // Icon (optional)
+        ).then(function(data) {
+            console.log("Notification sent successfully:", data);
+        }).catch(function(error) {
+            console.error("Error sending notification:", error);
+        });
     });
 }
