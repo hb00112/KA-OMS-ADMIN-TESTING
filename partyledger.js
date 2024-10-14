@@ -987,3 +987,21 @@ async function generateCloudinarySignature(timestamp) {
     return hashHex;
 }
 
+function initializeOneSignal() {
+    if (typeof OneSignal === 'undefined') {
+        console.warn('OneSignal is not loaded. Make sure the script is included properly.');
+        return;
+    }
+    
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+        OneSignal.init({
+            appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d",
+        });
+    });
+}
+function subscribeToNotifications() {
+    OneSignal.push(function() {
+        OneSignal.showNativePrompt();
+    });
+}
