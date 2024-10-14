@@ -23,3 +23,17 @@ self.addEventListener('fetch', event => {
       .then(response => response || fetch(event.request))
   );
 });
+
+importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
+
+// Your existing service worker code here
+// ...
+
+self.addEventListener('install', function(event) {
+    console.log('Service Worker installed');
+});
+
+self.addEventListener('activate', function(event) {
+    console.log('Service Worker activated');
+});
+
