@@ -12,20 +12,24 @@
     <link rel="stylesheet" href="paymententry.css">
     <style id="anti-select-style"></style>
     <link rel="manifest" href="manifest.json">
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "cc109344-1630-4454-93d7-7f67324357e6",
-      safari_web_id: "web.onesignal.auto.48d9c6a2-4943-4221-b17b-a4e235bf1c7d",
-      notifyButton: {
-        enable: true,
-      },
-    });
-  });
-</script>
+
 </head>
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" defer></script>
+<script>
+    window.OneSignal = window.OneSignal || [];
+OneSignal.push(function() {
+    OneSignal.init({
+        appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d",
+    });
+});
+
+function subscribeToNotifications() {
+    OneSignal.push(function() {
+        OneSignal.showNativePrompt();
+    });
+}
+
+</script>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen" class="loader-container">
@@ -78,9 +82,9 @@
                 <div class="header-right">
                     <img id="header-user-photo" src="/api/placeholder/100/100" alt="Profile Picture">
                     <span id="header-username">User</span>
-                  
+                    <button id="subscribe-button" onclick="subscribeToNotifications()">Subscribe to Notifications</button>
                     <div id="clock" class="time">00:00:00</div>
-                  
+                    
                 </div>
             </header>
 
@@ -110,10 +114,9 @@
 
     
     <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="loading.js"></script>
     <script src="auth.js"></script>
@@ -123,10 +126,5 @@
     <script src="billentry.js"></script>
     <script src="paymententry.js"></script>
     <script src="cn.js"></script>
-    <script src="._OneSignalSDK-v16-ServiceWorker.js"></script>
-    <script src="._OneSignalSDKWorker.js"></script>
-    <script src="OneSignalSDKWorker.js"></script>
-
- 
 </body>
 </html>
