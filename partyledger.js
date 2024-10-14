@@ -8,7 +8,7 @@ async function initializePartyLedger() {
     searchInput.addEventListener('input', searchParties);
     
     addSearchIcon();
-    
+    initializeOneSignal();
     try {
         await setupIndexedDB();
         setupFirebaseListener();
@@ -220,32 +220,31 @@ async function saveNewParty(event) {
     }
 }
 
+// Function to send OneSignal notification
 async function sendOneSignalNotification(partyName) {
-    const notificationData = {
-        app_id: "19a944ff-c668-4b2d-811d-1d45f4a8be09",
-        contents: {"en": `New party "${partyName}" has been added!`},
-        included_segments: ["All"]
-    };
-
     try {
-        const response = await fetch('https://onesignal.com/api/v1/notifications', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Nzc0ZjM2NjYtOTkwOC00ZTRkLTlhYTAtZDQ5OTAyZTc2MTVm'
+        await OneSignal.init({ appId: "754318ba-efa5-428b-b4f1-70d4f1f2644d" });
+        await OneSignal.showSlidedownPrompt();
+        
+        const notificationObj = {
+            contents: {
+                'en': `New party added: ${partyName}`
             },
-            body: JSON.stringify(notificationData)
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to send notification');
-        }
-
-        console.log('Notification sent successfully');
+            included_segments: ['All']
+        };
+        
+        await OneSignal.sendSelfNotification(
+            notificationObj.contents,
+            null,
+            null,
+            null,
+            notificationObj.included_segments
+        );
     } catch (error) {
-        console.error('Error sending notification:', error);
+        console.error('Error sending OneSignal notification:', error);
     }
 }
+
 function displayParties(parties) {
     const partyList = document.getElementById('partyList');
     partyList.innerHTML = '';
