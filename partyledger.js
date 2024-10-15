@@ -185,7 +185,6 @@ async function saveNewParty(event) {
         month: 'short', 
         year: 'numeric' 
     });
-
     const partyData = {
         name: document.getElementById('partyName').value,
         station: document.getElementById('partyStation').value,
@@ -211,7 +210,12 @@ async function saveNewParty(event) {
         await firebase.database().ref('transactions').push(openingBalanceEntry);
         
         // Send Webpushr notification
-        sendWebpushrNotification(partyData.name);
+        try {
+            await sendWebpushrNotification(partyData.name);
+        } catch (notificationError) {
+            console.error('Error sending Webpushr notification:', notificationError);
+            // Continue with closing the modal even if notification fails
+        }
         
         closeModal();
     } catch (error) {
@@ -219,26 +223,33 @@ async function saveNewParty(event) {
     }
 }
 
-function sendWebpushrNotification(partyName) {
-    if (typeof webpushr === "undefined") {
-        console.error("Webpushr SDK not loaded");
-        return;
-    }
-
-    webpushr('send', {
+async function sendWebpushrNotification(partyName) {
+    const notificationData = {
         title: "New Party Added",
         message: `A new party "${partyName}" has been added to the system.`,
         target_url: window.location.origin,
-        icon: 'https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png'
-    })
-    .then(function(response) {
-        console.log("Notification sent successfully:", response);
-    })
-    .catch(function(error) {
-        console.error("Error sending notification:", error);
+        icon: "https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png"
+    };
+    
+    const response = await fetch('https://api.webpushr.com/v1/notification/send/all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'webpushrKey': 'ff7ff42103b18bb560f65e9e89221c4e',
+            'webpushrAuthToken': '98307'
+        },
+        body: JSON.stringify(notificationData)
     });
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to send Webpushr notification: ${JSON.stringify(errorData)}`);
+    }
+    
+    const result = await response.json();
+    console.log('Webpushr notification sent:', result);
+    return result;
 }
-
 function displayParties(parties) {
     const partyList = document.getElementById('partyList');
     partyList.innerHTML = '';
