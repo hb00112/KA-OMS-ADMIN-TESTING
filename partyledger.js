@@ -980,4 +980,15 @@ async function generateCloudinarySignature(timestamp) {
     
     return hashHex;
 }
+(function(w,d, s, id) {
+    if(typeof(w.webpushr)!=='undefined') return;
+    w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};
+    var js, fjs = d.getElementsByTagName(s)[0];
+    js = d.createElement(s); js.id = id;
+    js.async = 1;
+    js.src = "https://cdn.webpushr.com/app.min.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(window,document, 'script', 'webpushr-jssdk'));
+
+webpushr('setup',{'key':'BNYJTi3UmwNRtjvl2FoU5M7GY60ZYxFCbRZ6mmBD_EDUTC6Sq9y3213TBg-KOYqPJV2E-5kvivKAQl17lj8u-Fs'});
 
