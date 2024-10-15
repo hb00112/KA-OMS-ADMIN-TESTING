@@ -8,7 +8,7 @@ async function initializePartyLedger() {
     searchInput.addEventListener('input', searchParties);
     
     addSearchIcon();
-    initializeOneSignal();
+    
     try {
         await setupIndexedDB();
         setupFirebaseListener();
@@ -211,13 +211,41 @@ async function saveNewParty(event) {
         };
         await firebase.database().ref('transactions').push(openingBalanceEntry);
         
-       
+        // Send OneSignal notification
+        await sendOneSignalNotification(partyData.name);
+        
         closeModal();
     } catch (error) {
         console.error('Error saving party:', error);
     }
 }
 
+async function sendOneSignalNotification(partyName) {
+    const notificationData = {
+        app_id: "19a944ff-c668-4b2d-811d-1d45f4a8be09",
+        contents: {"en": `New party "${partyName}" has been added!`},
+        included_segments: ["All"]
+    };
+
+    try {
+        const response = await fetch('https://onesignal.com/api/v1/notifications', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Nzc0ZjM2NjYtOTkwOC00ZTRkLTlhYTAtZDQ5OTAyZTc2MTVm'
+            },
+            body: JSON.stringify(notificationData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send notification');
+        }
+
+        console.log('Notification sent successfully');
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+}
 function displayParties(parties) {
     const partyList = document.getElementById('partyList');
     partyList.innerHTML = '';
@@ -382,9 +410,6 @@ function displayEntries(type, partyKey) {
     entriesContainer.innerHTML = ''; // Clear previous entries
 
     fetchEntriesFromFirebase(type, partyKey).then(entries => {
-        let runningBalance = 0;
-        let actualBalance = 0;
-        
         firebase.database().ref('parties').child(partyKey).once('value')
             .then(snapshot => {
                 const party = snapshot.val();
@@ -396,38 +421,43 @@ function displayEntries(type, partyKey) {
                         id: 'opening_balance'
                     };
                     
-                    entries.unshift(openingBalanceEntry);
-                    
-                    // Sort entries by date, oldest first
-                    entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    
-                    runningBalance = party.openingBalance;
-                    actualBalance = party.openingBalance;
+                    entries.push(openingBalanceEntry);
                 }
+                
+                // Sort entries by date, newest first
+                entries.sort((a, b) => new Date(b.date || b.cnDate) - new Date(a.date || a.cnDate));
                 
                 const fragment = document.createDocumentFragment();
                 
-                // Calculate running balances and actual balance
-                entries.forEach(entry => {
-                    if (entry.type === 'bill') {
+                // Calculate running balances starting from the oldest entry (last in the array)
+                let runningBalance = 0;
+                for (let i = entries.length - 1; i >= 0; i--) {
+                    const entry = entries[i];
+                    if (entry.type === 'opening_balance') {
+                        runningBalance = entry.amount;
+                    } else if (entry.type === 'bill') {
                         runningBalance += entry.totalAmount;
-                        actualBalance += entry.totalAmount;
                     } else if (entry.type === 'cn') {
                         runningBalance -= entry.cnAmount;
-                        actualBalance -= entry.cnAmount; // Subtract CN amount from actualBalance as well
                     } else if (entry.type === 'payment') {
                         runningBalance -= entry.amountPaid;
-                        actualBalance -= entry.amountPaid;
                     }
                     entry.runningBalance = runningBalance;
-                });
+                }
+                
+                // The final balance is now the balance of the newest entry (first in the array)
+                const actualBalance = entries[0].runningBalance;
                 
                 // Update party balance with the latest actual balance
                 updatePartyBalance(partyKey, actualBalance);
                 
-                // Reverse the entries array to display most recent first
-                entries.reverse();
+                // Update the balance display in the UI
+                const balanceDisplay = document.querySelector('.party-balance-amount');
+                if (balanceDisplay) {
+                    balanceDisplay.textContent = `₹${actualBalance.toFixed(2)}`;
+                }
                 
+                // Create entry elements in the sorted order (newest first)
                 entries.forEach(entry => {
                     const entryElement = createEntryElement(entry);
                     fragment.appendChild(entryElement);
@@ -960,118 +990,3 @@ async function generateCloudinarySignature(timestamp) {
     return hashHex;
 }
 
-// OneSignal Initialization
-function initializeOneSignal() {
-    console.log('Initializing OneSignal...');
-    if (typeof OneSignal === 'undefined') {
-        console.error('OneSignal is not loaded. Make sure the script is included properly.');
-        return;
-    }
-    
-    OneSignal.push(function() {
-        console.log('OneSignal push function called');
-        OneSignal.init({
-            appId: "YOUR_ONESIGNAL_APP_ID",
-            allowLocalhostAsSecureOrigin: true, // Remove this in production
-            notifyButton: {
-                enable: true,
-            },
-        }).then(() => {
-            console.log('OneSignal init successful');
-            return OneSignal.showSlidedownPrompt();
-        }).then(() => {
-            console.log('Slidedown prompt shown');
-            return checkSubscriptionStatus();
-        }).catch(error => {
-            console.error('Error during OneSignal initialization:', error);
-        });
-    });
-}
-
-// Function to subscribe to notifications
-function subscribeToNotifications() {
-    console.log('Attempting to subscribe to notifications...');
-    if (typeof OneSignal === 'undefined') {
-        console.error('OneSignal is not loaded. Unable to subscribe.');
-        return;
-    }
-    
-    OneSignal.push(function() {
-        console.log('Inside OneSignal push function for subscription');
-        OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-            if (isEnabled) {
-                console.log('User is already subscribed');
-            } else {
-                console.log('Prompting user to subscribe');
-                OneSignal.showNativePrompt().then(() => {
-                    console.log('Native prompt shown');
-                    return checkSubscriptionStatus();
-                }).catch(error => {
-                    console.error('Error showing native prompt:', error);
-                });
-            }
-        });
-    });
-}
-
-// Function to check subscription status
-function checkSubscriptionStatus() {
-    console.log('Checking subscription status...');
-    return new Promise((resolve, reject) => {
-        OneSignal.push(function() {
-            Promise.all([
-                OneSignal.isPushNotificationsEnabled(),
-                OneSignal.getUserId()
-            ]).then(([isPushEnabled, userId]) => {
-                console.log('Push Enabled:', isPushEnabled);
-                console.log('User ID:', userId);
-                resolve({ isPushEnabled, userId });
-            }).catch(error => {
-                console.error('Error checking subscription status:', error);
-                reject(error);
-            });
-        });
-    });
-}
-
-// Function to send test notification
-function sendTestNotification() {
-    console.log('Attempting to send test notification...');
-    if (typeof OneSignal === 'undefined') {
-        console.error('OneSignal is not loaded. Unable to send notification.');
-        return;
-    }
-    
-    OneSignal.push(function() {
-        OneSignal.sendSelfNotification(
-            "Test Notification",
-            "This is a test message",
-            'https://example.com', // URL (optional)
-            '/icon.png'  // Icon (optional)
-        ).then(function(data) {
-            console.log("Notification sent successfully:", data);
-        }).catch(function(error) {
-            console.error("Error sending notification:", error);
-        });
-    });
-}
-
-// Initialize when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing OneSignal...');
-    initializeOneSignal();
-    
-    const subscribeButton = document.getElementById('subscribe-button');
-    if (subscribeButton) {
-        subscribeButton.addEventListener('click', subscribeToNotifications);
-    } else {
-        console.error('Subscribe button not found in the DOM');
-    }
-    
-    const testNotificationButton = document.getElementById('test-notification-button');
-    if (testNotificationButton) {
-        testNotificationButton.addEventListener('click', sendTestNotification);
-    } else {
-        console.error('Test notification button not found in the DOM');
-    }
-});
