@@ -224,17 +224,11 @@ function sendWebpushrNotification(partyName) {
         return;
     }
 
-    webpushr.push({
+    webpushr('send', {
         title: "New Party Added",
         message: `A new party "${partyName}" has been added to the system.`,
         target_url: window.location.origin,
         image: "https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png"
-    })
-    .then(function(response) {
-        console.log('Webpushr notification sent:', response);
-    })
-    .catch(function(error) {
-        console.error('Error sending Webpushr notification:', error);
     });
 }
 function displayParties(parties) {
