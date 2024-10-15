@@ -12,6 +12,19 @@
     <link rel="stylesheet" href="paymententry.css">
     <style id="anti-select-style"></style>
     <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "fbf60ba6-5b1d-4802-bf83-604f597a85cb",
+      safari_web_id: "web.onesignal.auto.2487def5-35e2-42f0-bbb7-1e786c35cbb1",
+      notifyButton: {
+        enable: true,
+      },
+    });
+  });
+</script>
 </head>
 <body>
     <!-- Loading Screen -->
