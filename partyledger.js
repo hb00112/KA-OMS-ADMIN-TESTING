@@ -174,7 +174,6 @@ function closeModal() {
     const modal = document.getElementById('newPartyModal');
     modal.remove();
 }
-
 async function saveNewParty(event) {
     event.preventDefault();
     
@@ -224,8 +223,8 @@ async function sendWebpushrNotification(partyName) {
     const notificationData = {
         title: "New Party Added",
         message: `A new party "${partyName}" has been added to the system.`,
-        target_url: "https://your-app-url.com/parties", // Replace with your app's URL
-        icon: "https://your-app-url.com/icon.png" // Replace with your app's icon URL
+        target_url: window.location.origin, // Use the current website URL
+        icon: "https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png" // Your app's icon
     };
 
     try {
@@ -233,14 +232,15 @@ async function sendWebpushrNotification(partyName) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'webpushrKey': 'ff7ff42103b18bb560f65e9e89221c4e', // Updated with provided API key
-                'webpushrAuthToken': '98307' // Updated with provided token
+                'webpushrKey': 'ff7ff42103b18bb560f65e9e89221c4e',
+                'webpushrAuthToken': '98307'
             },
             body: JSON.stringify(notificationData)
         });
 
         if (!response.ok) {
-            throw new Error('Failed to send Webpushr notification');
+            const errorData = await response.json();
+            throw new Error(`Failed to send Webpushr notification: ${JSON.stringify(errorData)}`);
         }
 
         const result = await response.json();
@@ -249,6 +249,7 @@ async function sendWebpushrNotification(partyName) {
         console.error('Error sending Webpushr notification:', error);
     }
 }
+
 function displayParties(parties) {
     const partyList = document.getElementById('partyList');
     partyList.innerHTML = '';
