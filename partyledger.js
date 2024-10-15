@@ -211,7 +211,7 @@ async function saveNewParty(event) {
         await firebase.database().ref('transactions').push(openingBalanceEntry);
         
         // Send Webpushr notification
-        await sendWebpushrNotification(partyData.name);
+        sendWebpushrNotification(partyData.name);
         
         closeModal();
     } catch (error) {
@@ -219,35 +219,24 @@ async function saveNewParty(event) {
     }
 }
 
-async function sendWebpushrNotification(partyName) {
-    const notificationData = {
+function sendWebpushrNotification(partyName) {
+    if (typeof webpushr === "undefined") {
+        console.error("Webpushr SDK not loaded");
+        return;
+    }
+
+    webpushr('send', {
         title: "New Party Added",
         message: `A new party "${partyName}" has been added to the system.`,
-        target_url: window.location.origin, // Use the current website URL
-        icon: "https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png" // Your app's icon
-    };
-
-    try {
-        const response = await fetch('https://api.webpushr.com/v1/notification/send/all', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'webpushrKey': 'ff7ff42103b18bb560f65e9e89221c4e',
-                'webpushrAuthToken': '98307'
-            },
-            body: JSON.stringify(notificationData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to send Webpushr notification: ${JSON.stringify(errorData)}`);
-        }
-
-        const result = await response.json();
-        console.log('Webpushr notification sent:', result);
-    } catch (error) {
-        console.error('Error sending Webpushr notification:', error);
-    }
+        target_url: window.location.origin,
+        icon: 'https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png'
+    })
+    .then(function(response) {
+        console.log("Notification sent successfully:", response);
+    })
+    .catch(function(error) {
+        console.error("Error sending notification:", error);
+    });
 }
 
 function displayParties(parties) {
