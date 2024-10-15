@@ -211,33 +211,10 @@ async function saveNewParty(event) {
         };
         await firebase.database().ref('transactions').push(openingBalanceEntry);
         
-        // Send OneSignal notification
-        await sendOneSignalNotification(partyData.name);
-        
+       
         closeModal();
     } catch (error) {
         console.error('Error saving party:', error);
-    }
-}
-
-// Function to send OneSignal notification
-// Function to send OneSignal notification
-async function sendOneSignalNotification(partyName) {
-    if (typeof OneSignal === 'undefined') {
-        console.warn('OneSignal is not loaded. Unable to send notification.');
-        return;
-    }
-    
-    try {
-        await OneSignal.postNotification({
-            contents: {
-                en: `New party added: ${partyName}`
-            },
-            included_segments: ['All']
-        });
-        console.log('Notification sent successfully');
-    } catch (error) {
-        console.error('Error sending OneSignal notification:', error);
     }
 }
 
