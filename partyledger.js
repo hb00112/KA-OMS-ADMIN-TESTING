@@ -209,8 +209,8 @@ async function saveNewParty(event) {
         };
         await firebase.database().ref('transactions').push(openingBalanceEntry);
         
-        // Send client-side notification
-        await sendClientNotification(partyData.name);
+        // Send Webpushr notification
+        sendWebpushrNotification(partyData.name);
         
         closeModal();
     } catch (error) {
@@ -218,28 +218,24 @@ async function saveNewParty(event) {
     }
 }
 
-async function sendClientNotification(partyName) {
-    if (!("Notification" in window)) {
-        console.log("This browser does not support desktop notification");
+function sendWebpushrNotification(partyName) {
+    if (typeof webpushr === "undefined") {
+        console.error('Webpushr SDK not loaded');
         return;
     }
 
-    let permission = await Notification.requestPermission();
-
-    if (permission === "granted") {
-        const notification = new Notification("New Party Added", {
-            body: `A new party "${partyName}" has been added to the system.`,
-            icon: "https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png"
-        });
-
-        notification.onclick = function(event) {
-            event.preventDefault();
-            window.focus();
-            notification.close();
-        }
-    } else {
-        console.log("Notification permission denied");
-    }
+    webpushr.push({
+        title: "New Party Added",
+        message: `A new party "${partyName}" has been added to the system.`,
+        target_url: window.location.origin,
+        image: "https://i.postimg.cc/5NQMkRy6/Whats-App-Image-2024-10-09-at-17-54-38-removebg-preview-removebg-preview.png"
+    })
+    .then(function(response) {
+        console.log('Webpushr notification sent:', response);
+    })
+    .catch(function(error) {
+        console.error('Error sending Webpushr notification:', error);
+    });
 }
 function displayParties(parties) {
     const partyList = document.getElementById('partyList');
