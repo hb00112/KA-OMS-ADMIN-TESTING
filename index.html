@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Notification System</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Party Notification System</h1>
+        <button id="addPartyBtn">Add New Party</button>
+        <button id="sendNotificationBtn">Send Notification</button>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Party</h2>
+            <input type="text" id="partyNameInput" placeholder="Enter party name">
+            <button id="savePartyBtn">Save</button>
+            <button id="closeModalBtn">Close</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script src="script.js"></script>
+</body>
+</html>
