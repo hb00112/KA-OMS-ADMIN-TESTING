@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Party Notification System</title>
-    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
 </head>
 <body>
     <div class="container">
@@ -22,7 +23,21 @@
         </div>
     </div>
 
-    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+                appId: "da7dcfb1-1587-467d-a4c1-b7bcac4a7cea",
+                notifyButton: {
+                    enable: true,
+                },
+            });
+            console.log("OneSignal initialized");
+            OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+                console.log("Push notifications are enabled:", isEnabled);
+            });
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
