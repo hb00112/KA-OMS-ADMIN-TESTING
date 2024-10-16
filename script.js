@@ -43,17 +43,21 @@ function saveParty() {
     }
 }
 
+// ... (previous code remains the same)
+
 function sendNotification(partyName) {
     const message = partyName ? `New party added: ${partyName}` : 'New party notification';
     
     OneSignal.push(function() {
-        OneSignal.sendSelfNotification(
-            "Party Notification System",
-            message,
-            'https://ka-payments.netlify.app',
-            'https://onesignal-static.nyc3.cdn.digitaloceanspaces.com/notification-bell.png',
-            { url: "https://ka-payments.netlify.app" },
-            [{ id: "like-button", text: "Like", icon: "http://i.imgur.com/N8SN8ZS.png", url: "https://ka-payments.netlify.app" }]
-        );
+        OneSignal.postNotification({
+            contents: {en: message},
+            included_segments: ['All']
+        }, function(error, result) {
+            if (error) {
+                console.error('Error sending notification:', error);
+            } else {
+                console.log('Notification sent successfully:', result);
+            }
+        });
     });
 }
