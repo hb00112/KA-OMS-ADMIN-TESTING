@@ -20,7 +20,7 @@ let parties = [];
 addPartyBtn.addEventListener('click', openModal);
 closeModalBtn.addEventListener('click', closeModal);
 savePartyBtn.addEventListener('click', saveParty);
-sendNotificationBtn.addEventListener('click', sendNotification);
+sendNotificationBtn.addEventListener('click', () => sendNotification());
 
 // Functions
 function openModal() {
@@ -43,21 +43,24 @@ function saveParty() {
     }
 }
 
-// ... (previous code remains the same)
-
 function sendNotification(partyName) {
     const message = partyName ? `New party added: ${partyName}` : 'New party notification';
     
     OneSignal.push(function() {
-        OneSignal.postNotification({
-            contents: {en: message},
-            included_segments: ['All']
-        }, function(error, result) {
-            if (error) {
-                console.error('Error sending notification:', error);
-            } else {
-                console.log('Notification sent successfully:', result);
-            }
-        });
+        OneSignal.sendSelfNotification(
+            "Party Notification", // Title
+            message, // Message
+            "https://example.com", // URL (optional)
+            "/icon.png", // Icon (optional)
+            {
+                notificationType: "party"
+            }, // Data (optional)
+            [{ // Buttons (optional)
+                id: "like-button",
+                text: "Like",
+                icon: "http://i.imgur.com/N8SN8ZS.png",
+                url: "https://example.com"
+            }]
+        );
     });
 }
