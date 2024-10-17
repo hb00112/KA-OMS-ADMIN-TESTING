@@ -219,5 +219,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+function addHapticFeedback(event) {
+    if (isDebouncing) return;
+    isDebouncing = true;
+
+    let target = event.target;
+
+    // Check if the clicked element or its parent is interactive
+    while (target && target !== document.body) {
+        if (isInteractiveElement(target)) {
+            // Trigger vibration
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50); // Short vibration, 50ms
+            }
+
+            // Play soft sound
+            createSoftSound();
+            break;
+        }
+        target = target.parentElement;
+    }
+ // Reset debounce after a short delay
+    setTimeout(() => {
+        isDebouncing = false;
+    }, 100);
+}
  
 });
