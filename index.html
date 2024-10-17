@@ -112,6 +112,58 @@
     <!-- start webpushr code --> <script>(function(w,d, s, id) {if(typeof(w.webpushr)!=='undefined') return;w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};var js, fjs = d.getElementsByTagName(s)[0];js = d.createElement(s); js.id = id;js.async=1;js.src = "https://cdn.webpushr.com/app.min.js";fjs.parentNode.appendChild(js);}(window,document, 'script', 'webpushr-jssdk'));webpushr('setup',{'key':'BNYJTi3UmwNRtjvl2FoU5M7GY60ZYxFCbRZ6mmBD_EDUTC6Sq9y3213TBg-KOYqPJV2E-5kvivKAQl17lj8u-Fs' });</script><!-- end webpushr code -->
  <script src="._webpushr-sw.js"></script>
  <script src="webpushr-sw.js"></script>
+<script>
+// Initialize Audio Context
+let audioContext = null;
+
+// Initialize on first user interaction
+document.addEventListener('click', function initAudio() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    document.removeEventListener('click', initAudio);
+}, { once: true });
+
+// Create soft feedback sound
+function createSoftSound() {
+    if (!audioContext) return;
+    
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    // Soft sound settings
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+    
+    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.06);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.06);
+}
+
+// Add haptic feedback to all buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all buttons
+    const buttons = document.querySelectorAll('button');
+    
+    // Add haptic feedback to each button
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Trigger vibration
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+            
+            // Play sound
+            createSoftSound();
+        });
+    });
+});
+</script>
 </script>
 </body>
 </html>
