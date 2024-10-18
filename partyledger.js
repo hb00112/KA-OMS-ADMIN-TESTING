@@ -3,18 +3,20 @@ let dbInitialized = false;
 
 async function initializePartyLedger() {
     const searchInput = document.getElementById('partySearch');
-    
-   
     searchInput.addEventListener('input', searchParties);
-    
     addSearchIcon();
-    
+
     try {
         await setupIndexedDB();
         setupFirebaseListener();
-        
-        // Ensure the "New Party" button is visible initially
-        
+
+        // Add popstate event listener for handling back button
+        window.addEventListener('popstate', (event) => {
+            if (!event.state || !event.state.section) {
+                goBack();
+            }
+        });
+
     } catch (error) {
         console.error('Failed to initialize:', error);
     }
