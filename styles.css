@@ -185,12 +185,12 @@ h2, h3 {
 
 /* Color Palette */
 :root {
-    --primary-color: #272A3F;
-    --secondary-color: #272A3F;
-    --accent-color: #8A6BA5;
+    --primary-color: #131522;
+    --secondary-color: #131522;
+    --accent-color: #282a3f;
     --text-color: #FEE8D7;
     --white-color: #FEE8D7;
-    --button-bg: 9AA59D;
+    --button-bg: #282a3f;
     --shadow-color: rgba(106, 13, 173, 0.1);
     --transition-time: 0.3s;
 }
@@ -285,7 +285,7 @@ margin-bottom: 50px;
 .card h3 {
     margin: 4px 0 6px 0;
     font-size: 18px;
-    color: var(--primary-color);
+    color: var(--text-color);
     font-weight: 600;
     margin-top: 5px;
 }
@@ -303,7 +303,7 @@ margin-bottom: 50px;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--white-color);
+    background-color: var(--primary-color);
     padding: 10px;
     text-align: center;
     box-shadow: 0 -4px 10px var(--shadow-color);
