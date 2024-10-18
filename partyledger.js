@@ -323,8 +323,10 @@ async function fetchLatestBalance(partyKey) {
     }
 }
 
-
 function openPartySection(party) {
+    // Push a new state to the browser history
+    history.pushState({ partySection: true }, '', '');
+
     const section = document.createElement('div');
     section.className = 'party-full-section';
     section.innerHTML = `
@@ -404,8 +406,20 @@ function openPartySection(party) {
 
     const backButton = section.querySelector('.party-back-button');
     backButton.addEventListener('click', () => {
-        document.body.removeChild(section);
+        history.back(); // Use history.back() instead of manually removing
     });
+
+    // Add popstate event listener to handle back button
+    const handleBackButton = (event) => {
+        const partySections = document.querySelectorAll('.party-full-section');
+        if (partySections.length > 0) {
+            partySections.forEach(section => section.remove());
+        }
+        // Remove this specific popstate listener after it's used
+        window.removeEventListener('popstate', handleBackButton);
+    };
+
+    window.addEventListener('popstate', handleBackButton);
 
     const reportButton = section.querySelector('#reportButton');
     const paymentButton = section.querySelector('#paymentButton');
