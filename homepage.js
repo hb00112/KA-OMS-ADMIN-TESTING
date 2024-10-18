@@ -97,6 +97,9 @@ async function showSection(sectionName) {
     const sectionContent = document.querySelector('.section-content');
     sectionContent.innerHTML = ''; // Clear previous content
     
+ // Push state to history when navigating to a section
+    history.pushState({ section: sectionName }, '', `#${sectionName.toLowerCase().replace(/\s+/g, '-')}`);
+
     try {
         switch(sectionName) {
             case 'Party Ledgers':
@@ -188,10 +191,10 @@ function showLoadingIndicator(sectionContent) {
 function goBack() {
     document.getElementById('section-container').style.display = 'none';
     document.getElementById('homepage-container').style.display = 'block';
-    // Clear the section content when going back to the homepage
     document.querySelector('.section-content').innerHTML = '';
+    // Remove the hash from URL when going back to homepage
+    history.pushState('', document.title, window.location.pathname);
 }
-
 // Quick action function
 function quickAction() {
     alert('Quick Action Triggered');
@@ -218,6 +221,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPartyBtn = document.getElementById('addPartyBtn');
     if (addPartyBtn) {
         addPartyBtn.style.display = 'block';
+    }
+// Handle initial hash in URL if any
+    if (window.location.hash) {
+        const sectionName = window.location.hash.slice(1).replace(/-/g, ' ');
+        const validSection = cardData.find(card => 
+            card.title.toLowerCase() === sectionName.toLowerCase()
+        );
+        if (validSection) {
+            showSection(validSection.title);
+        }
     }
 });
 
