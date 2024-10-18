@@ -185,12 +185,12 @@ h2, h3 {
 
 /* Color Palette */
 :root {
-    --primary-color: linear-gradient(135deg, #2E303A 0%, #1C1E26 50%, #131522 100%);
-    --secondary-color: linear-gradient(135deg, #2E303A 0%, #1C1E26 50%, #131522 100%);
-    --accent-color: #282a3f;
-    --text-color: #FEE8D7;
-    --white-color: #FEE8D7;
-    --button-bg: #282a3f;
+    --primary-color: #0f1523;
+    --secondary-color: #0f1523;
+    --accent-color: #1d2339;
+    --text-color: #e5d4c8;
+    --white-color: #e5d4c8;
+    --button-bg: #0f1523;
     --transition-time: 0.3s;
 }
 
@@ -299,13 +299,14 @@ margin-bottom: 50px;
 /* Fixed Footer */
 .fixed-footer {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: var(--primary-color);
+    bottom: 3;
+    left: 3;
+    right: 3;
+    background-color: #1d2339;
     padding: 10px;
     text-align: center;
     box-shadow: 0 -4px 10px var(--shadow-color);
+    border-radius: 8px:;
 }
 
 .fixed-footer button {
