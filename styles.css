@@ -185,12 +185,12 @@ h2, h3 {
 
 /* Color Palette */
 :root {
-    --primary-color: #1E88E5;
-    --secondary-color: #43A047;
-    --accent-color: #F5F5F5;
-    --text-color: #212121;
-    --white-color: #FFFFFF;
-    --button-bg: linear-gradient(135deg, #FF69B4, #DA70D6);
+    --primary-color: #272A3F;
+    --secondary-color: #272A3F;
+    --accent-color: #8A6BA5;
+    --text-color: #FEE8D7;
+    --white-color: #FEE8D7;
+    --button-bg: 9AA59D;
     --shadow-color: rgba(106, 13, 173, 0.1);
     --transition-time: 0.3s;
 }
@@ -247,7 +247,7 @@ header {
 
 .time {
     font-size: 12px;
-    color: var(--secondary-color);
+    color: var(--white-color);
     margin-top: 2px;
 }
 
@@ -265,7 +265,7 @@ margin-bottom: 50px;
 
 /* Card Styles */
 .card {
-    background-color: var(--white-color);
+    background-color: var(--accent-color);
     border-radius: 15px;
     box-shadow: 0 10px 20px var(--shadow-color);
     padding: 10px;
@@ -314,10 +314,11 @@ margin-bottom: 50px;
     color: var(--white-color);
     border: none;
     padding: 10px 25px;
-    border-radius: 25px;
+    border-radius: 15px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
+    width: 70px;
 }
 
 /* Section Styles */
