@@ -309,15 +309,15 @@ margin-bottom: 50px;
 }
 
 .fixed-footer button {
-    background: var(--button-bg);
-    color: var(--white-color);
+    background: #163450;
+    color: #1faff8;
     border: none;
     padding: 10px 25px;
     border-radius: 15px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    width: 300px;
+    width: 315px;
 }
 
 /* Section Styles */
