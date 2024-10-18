@@ -185,10 +185,10 @@ h2, h3 {
 
 /* Color Palette */
 :root {
-    --primary-color: #6A0DAD;
-    --secondary-color: #F8E1FF;
-    --accent-color: #FF69B4;
-    --text-color: #333333;
+    --primary-color: #1E88E5;
+    --secondary-color: #43A047;
+    --accent-color: #F5F5F5;
+    --text-color: #212121;
     --white-color: #FFFFFF;
     --button-bg: linear-gradient(135deg, #FF69B4, #DA70D6);
     --shadow-color: rgba(106, 13, 173, 0.1);
