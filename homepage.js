@@ -38,14 +38,10 @@ const cardData = [
     },
 ];
 
-// Navigation history stack
-let navigationHistory = [];
-
 // Initialize homepage
 function initializeHomepage() {
     const mainSection = document.querySelector('.main-section');
     mainSection.innerHTML = ''; // Clear existing content
-    navigationHistory = []; // Clear navigation history
 
     // Create cards
     cardData.forEach(card => {
@@ -53,6 +49,7 @@ function initializeHomepage() {
         cardElement.className = 'card';
         cardElement.onclick = () => showSection(card.title);
         
+        // Create image element
         const imgElement = document.createElement('img');
         imgElement.src = card.logo;
         imgElement.alt = `${card.title} icon`;
@@ -66,8 +63,10 @@ function initializeHomepage() {
         mainSection.appendChild(cardElement);
     });
 
+    // Update header username
     document.getElementById('header-username').textContent = currentUser;
     
+    // Start clock
     updateTime();
     setInterval(updateTime, 1000);
 }
@@ -88,24 +87,8 @@ function updateTime() {
     document.getElementById('clock').textContent = timeString;
 }
 
-// Show section with navigation tracking
-async function showSection(sectionName, subSection = null) {
-    // Save current state to history
-    const currentState = {
-        sectionName: document.getElementById('section-title').textContent,
-        content: document.querySelector('.section-content').innerHTML,
-        display: {
-            homepage: document.getElementById('homepage-container').style.display,
-            section: document.getElementById('section-container').style.display
-        }
-    };
-
-    // Only push to history if we're not on the homepage
-    if (document.getElementById('section-container').style.display === 'block') {
-        navigationHistory.push(currentState);
-    }
-
-    // Update display
+// Show section
+async function showSection(sectionName) {
     document.getElementById('homepage-container').style.display = 'none';
     const sectionContainer = document.getElementById('section-container');
     sectionContainer.style.display = 'block';
@@ -120,6 +103,7 @@ async function showSection(sectionName, subSection = null) {
                 sectionContent.innerHTML = `
                     <input type="text" id="partySearch" class="party-search" placeholder="Search parties...">
                     <div id="partyList" class="party-list"></div>
+                    
                 `;
                 await initializePartyLedger();
                 break;
@@ -135,11 +119,12 @@ async function showSection(sectionName, subSection = null) {
             case 'CN Entry':
                 initializeCNEntry();
                 break;
+               
 
-            case 'Outstanding':
-                sectionContent.innerHTML = '';
-                await initializeOutstanding();
-                break;
+                case 'Outstanding':
+                    sectionContent.innerHTML = ''; // Clear previous content
+                    await initializeOutstanding();
+                    break;
 
             case 'Activity':
                 sectionContent.innerHTML = `
@@ -176,32 +161,16 @@ async function showSection(sectionName, subSection = null) {
             </div>
         `;
     }
-}
 
-// Enhanced goBack function
-function goBack() {
-    if (navigationHistory.length === 0) {
-        // If no history, return to homepage
-        document.getElementById('section-container').style.display = 'none';
-        document.getElementById('homepage-container').style.display = 'block';
-        document.querySelector('.section-content').innerHTML = '';
-        return;
+    // Add error handling for required functions
+    if (sectionName === 'Party Ledgers' && typeof initializePartyLedger !== 'function') {
+        console.error('initializePartyLedger function is not defined');
     }
-
-    // Get previous state
-    const previousState = navigationHistory.pop();
-
-    // Restore previous state
-    document.getElementById('section-title').textContent = previousState.sectionName;
-    document.querySelector('.section-content').innerHTML = previousState.content;
-    
-    // Restore display states
-    document.getElementById('homepage-container').style.display = previousState.display.homepage;
-    document.getElementById('section-container').style.display = previousState.display.section;
-
-    // If we're going back to homepage
-    if (previousState.display.homepage === 'block') {
-        navigationHistory = []; // Clear remaining history
+    if (sectionName === 'Bill Entry' && typeof initializeBillEntry !== 'function') {
+        console.error('initializeBillEntry function is not defined');
+    }
+    if (sectionName === 'Payment Entry' && typeof initializePaymentEntry !== 'function') {
+        console.error('initializePaymentEntry function is not defined');
     }
 }
 
@@ -215,12 +184,19 @@ function showLoadingIndicator(sectionContent) {
     `;
 }
 
+// Go back to homepage
+function goBack() {
+    document.getElementById('section-container').style.display = 'none';
+    document.getElementById('homepage-container').style.display = 'block';
+    // Clear the section content when going back to the homepage
+    document.querySelector('.section-content').innerHTML = '';
+}
+
 // Quick action function
 function quickAction() {
     alert('Quick Action Triggered');
 }
 
-// Event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Prevent copy and paste
     document.addEventListener('copy', function(e) {
@@ -243,7 +219,5 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addPartyBtn) {
         addPartyBtn.style.display = 'block';
     }
-
-    // Initialize the homepage
-    initializeHomepage();
 });
+
