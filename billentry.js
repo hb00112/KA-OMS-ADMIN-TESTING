@@ -33,6 +33,12 @@ function initializeBillEntry() {
 
     loadBillData();
     addModalStyles();
+
+    window.addEventListener('popstate', (event) => {
+        if (!event.state || !event.state.section) {
+            goBack();
+        }
+    });
 }
 
 function filterBills() {
