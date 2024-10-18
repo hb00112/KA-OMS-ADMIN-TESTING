@@ -30,6 +30,11 @@ async function initializeOutstanding() {
             </div>
         `;
     }
+    window.addEventListener('popstate', (event) => {
+        if (!event.state || !event.state.section) {
+            goBack();
+        }
+    });
 }
 
 async function showPartyOutstanding(partyId, partyName) {
