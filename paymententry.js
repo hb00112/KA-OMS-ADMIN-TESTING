@@ -579,6 +579,12 @@ function initializePaymentEntry() {
     
     // Load and display existing payments
     loadExistingPayments();
+
+  window.addEventListener('popstate', (event) => {
+        if (!event.state || !event.state.section) {
+            goBack();
+        }
+    });
 }
 
 function loadExistingPayments() {
