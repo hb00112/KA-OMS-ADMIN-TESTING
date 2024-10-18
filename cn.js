@@ -178,6 +178,11 @@ function initializeCNEntry() {
 
     document.getElementById('newCNEntryBtn').addEventListener('click', () => openCNEntryModal());
     loadCNEntries();
+    window.addEventListener('popstate', (event) => {
+        if (!event.state || !event.state.section) {
+            goBack();
+        }
+    });
 }
 
 
