@@ -312,8 +312,8 @@ height: 150px;
 /* Card Styles */
 .card {
     flex: 0 0 auto;
-    width: 75px;
-    height: 75px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
