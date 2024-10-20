@@ -372,10 +372,9 @@ width: 100%;
     bottom: 0;
     left: 0;
     right: 0;
-    top: 850px;;
     background: rgb(98,98,98);
     background: radial-gradient(circle, rgba(98,98,98,1) 0%, rgba(78,77,77,1) 0%, rgba(34,34,34,1) 22%, rgba(19,19,19,1) 60%);
-    padding: 10px;
+    padding: 1px;
     text-align: center;
     box-shadow: 0 -4px 10px var(--shadow-color);
     border-top-left-radius: 25px;
@@ -394,10 +393,10 @@ width: 100%;
     cursor: pointer;
     font-size: 50px;
     font-weight: 700;
-    width: 80px;
-    height: 80px;
+    width: 83px;
+    height: 83px;
     position: relative;
-    bottom: 40px;
+    bottom: 37px;
     border: 9px solid #07070d;
 }
 
