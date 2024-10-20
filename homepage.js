@@ -2,7 +2,7 @@
 
 const cardData = [
     { 
-        title: 'Party Ledgers', 
+        title: 'Ledgers', 
         description: 'Manage and view all party transaction details.',
         logo: 'https://i.postimg.cc/T2HpW52V/9800965.png',
         color: '#163450'  // Gold
@@ -14,7 +14,7 @@ const cardData = [
         color: '#311D50'  // Pale Green
     },
     { 
-        title: 'Payment Entry', 
+        title: 'Payment', 
         description: 'Record payments received from parties.',
         logo: 'https://i.postimg.cc/4x6MjtmV/Whats-App-Image-2024-10-18-at-22-40-44-49f4b529-removebg-preview.png',
         color: '#462133'  // Light Sky Blue
