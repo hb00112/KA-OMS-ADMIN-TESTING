@@ -44,7 +44,7 @@ function initializeHomepage() {
 
     // Add banner image between header and cards
     const bannerImage = document.createElement('img');
-    bannerImage.src = 'https://i.ibb.co/NtvRCSk/Whats-App-Image-2024-10-21-at-15-23-50-01ffcfbe-removebg-preview.png';
+    bannerImage.src = 'https://i.ibb.co/FBsqPRW/Turning-PAyment-into-progress.png';
     bannerImage.alt = 'Banner';
     bannerImage.className = 'banner-image';
     bannerImage.style.width = '100%';
