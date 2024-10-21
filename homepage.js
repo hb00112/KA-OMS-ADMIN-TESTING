@@ -44,7 +44,7 @@ function initializeHomepage() {
 
     // Add banner image between header and cards
     const bannerImage = document.createElement('img');
-    bannerImage.src = 'https://i.ibb.co/FBsqPRW/Turning-PAyment-into-progress.png';
+    bannerImage.src = 'https://i.ibb.co/n8mBNnD/Turning-PAyment-into-progress-5.png';
     bannerImage.alt = 'Banner';
     bannerImage.className = 'banner-image';
     bannerImage.style.width = '100%';
