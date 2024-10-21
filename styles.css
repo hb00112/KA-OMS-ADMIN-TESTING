@@ -289,16 +289,18 @@ background: linear-gradient(300deg, rgba(5,5,10,1) 0%, rgba(7,8,14,1) 25%, rgba(
     display: flex;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 20px;
+    padding-top: 0px;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
-margin-top: 150px;
+margin-top: 0px;
 margin-bottom: 50px;
 overflow-x: auto;
 overflow-y: hidden;
 align-items: center;
-height: 150px;
+height: 90px;
 width: 100%;
+position: relative;
 
 }
 
@@ -763,3 +765,7 @@ img {
     
     
 }
+
+
+    
+
