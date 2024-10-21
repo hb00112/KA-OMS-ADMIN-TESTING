@@ -31,12 +31,7 @@ const cardData = [
         logo: 'https://i.postimg.cc/NMJZpcLn/Whats-App-Image-2024-10-18-at-22-40-43-32a65498-removebg-preview.png',
         color: '#43271C'  // Light Salmon
     },
-    { 
-        title: 'Deleted', 
-        description: 'Records all deleted entries for restoring.',
-        logo: 'https://i.postimg.cc/Dzc94shn/Whats-App-Image-2024-10-18-at-22-40-42-b9e0cfd0-removebg-preview.png',
-        color: '#431522'  // Light Coral
-    },
+    
 ];
 
 function initializeHomepage() {
