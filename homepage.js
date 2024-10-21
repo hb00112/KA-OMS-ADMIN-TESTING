@@ -49,11 +49,11 @@ function initializeHomepage() {
 
     // Add banner image between header and cards
     const bannerImage = document.createElement('img');
-    bannerImage.src = 'https://i.ibb.co/KzMLHP1/Whats-App-Image-2024-10-21-at-12-26-54-f877253f.png';
+    bannerImage.src = 'https://i.ibb.co/NtvRCSk/Whats-App-Image-2024-10-21-at-15-23-50-01ffcfbe-removebg-preview.png';
     bannerImage.alt = 'Banner';
     bannerImage.className = 'banner-image';
     bannerImage.style.width = '100%';
-    bannerImage.style.height = '300px'; // Set a fixed height
+    bannerImage.style.height = '250px'; // Set a fixed height
     bannerImage.style.objectFit = 'cover'; // Maintain aspect ratio and cover the space
     bannerImage.style.objectPosition = 'center'; // Center the image
     bannerImage.style.display = 'block';
