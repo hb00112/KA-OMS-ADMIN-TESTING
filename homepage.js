@@ -43,6 +43,27 @@ function initializeHomepage() {
     const mainSection = document.querySelector('.main-section');
     mainSection.innerHTML = ''; // Clear existing content
 
+    // Remove any existing banner images first
+    const existingBanners = document.querySelectorAll('.banner-image');
+    existingBanners.forEach(banner => banner.remove());
+
+    // Add banner image between header and cards
+    const bannerImage = document.createElement('img');
+    bannerImage.src = 'https://i.ibb.co/KzMLHP1/Whats-App-Image-2024-10-21-at-12-26-54-f877253f.png';
+    bannerImage.alt = 'Banner';
+    bannerImage.className = 'banner-image';
+    bannerImage.style.width = '100%';
+    bannerImage.style.height = '300px'; // Set a fixed height
+    bannerImage.style.objectFit = 'cover'; // Maintain aspect ratio and cover the space
+    bannerImage.style.objectPosition = 'center'; // Center the image
+    bannerImage.style.display = 'block';
+    bannerImage.style.marginBottom = '0';
+    mainSection.parentElement.insertBefore(bannerImage, mainSection);
+
+    // Reset any margin/padding on main section
+    mainSection.style.marginTop = '0';
+    mainSection.style.paddingTop = '0';
+
     // Create cards (keeping exactly as original)
     cardData.forEach(card => {
         const cardElement = document.createElement('div');
@@ -70,12 +91,19 @@ function initializeHomepage() {
     // Create recent payments section
     const recentPaymentsSection = document.createElement('div');
     recentPaymentsSection.className = 'recent-payments-section';
-    recentPaymentsSection.style.marginTop = '10px'; // Push it below the cards
+    recentPaymentsSection.style.marginTop = '10px';
     recentPaymentsSection.style.padding = '0 20px';
     mainContainer.appendChild(recentPaymentsSection);
 
     // Fetch and display recent payments
     fetchRecentPayments();
+
+    // Update header username
+    document.getElementById('header-username').textContent = currentUser;
+    
+    // Start clock
+    updateTime();
+    setInterval(updateTime, 1000);
 }
 
 function fetchRecentPayments() {
@@ -301,4 +329,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
