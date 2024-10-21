@@ -711,7 +711,7 @@ img {
     gap: 7px;
     margin-left: 18px;
     margin-right: 18px;
-    bottom: 50px;
+    bottom: 5px;
     
 }
 
@@ -749,4 +749,16 @@ img {
     text-align: center;
     padding: 20px;
     color: #e74c3c;
+}
+
+.recent {
+    color: #fee8d7;
+    opacity: 0.6;
+    margin-left: 25px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    font-weight: 700;
+    text-shadow: #000000;
+    
+    
 }
