@@ -769,11 +769,10 @@ img {
 .custom-popup {
     position: absolute;
     bottom: 100%;
-    width: 95%;
-    height: 20vh;
+    width: 93%;
+    height: 22vh;
     background-color: #1b1b1b;
-    
-border-top-left-radius: 20px;
+    border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -802,7 +801,6 @@ border-top-left-radius: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    letter-spacing: 2px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
 }
@@ -810,10 +808,10 @@ border-top-left-radius: 20px;
 .popup-header h3 {
     margin: 0;
     color: #fEE8D7;
-    font-size: 20px;
+    font-size: 19px;
     text-align: center;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
 .close-btn {
@@ -824,7 +822,7 @@ border-top-left-radius: 20px;
     color: #cac8c8;
     padding: 5px 10px;
     margin-right: 1px;
-    font-weight: lighter;
+    margin-bottom: 1px;
 }
 
 .close-btn:hover {
