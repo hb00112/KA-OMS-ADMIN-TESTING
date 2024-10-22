@@ -769,7 +769,7 @@ img {
 .custom-popup {
     position: absolute;
     bottom: 100%;
-    width: 93%;
+    width: 94%;
     height: 22vh;
     background-color: #1b1b1b;
     border-top-left-radius: 20px;
@@ -819,14 +819,14 @@ img {
     border: none;
     font-size: 25px;
     cursor: pointer;
-    color: #cac8c8;
+    color: #ff0000;
     padding: 5px 10px;
     margin-right: 1px;
     margin-bottom: 1px;
 }
 
 .close-btn:hover {
-    color: #d8d7d7;
+    color: #ff0000;
 }
 
     
