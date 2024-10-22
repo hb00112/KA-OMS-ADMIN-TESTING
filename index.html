@@ -62,6 +62,7 @@
                 <div class="header-left">
                     <div class="welcome">Welcome back</div>
                     <div id="header-username">User</div>
+                    
                 </div>
                 <div class="header-right">
                     <img id="header-user-photo" src="/api/placeholder/100/100" alt="Profile Picture">
@@ -72,7 +73,8 @@
                     
                 </div>
             </header>
-
+            
+            
             <!-- Main Section -->
             <div class="main-section">
                 <!-- Cards will be dynamically added here -->
@@ -84,12 +86,26 @@
                 </div>
             </div>
 
-            <!-- Fixed Footer -->
-            <div class="fixed-footer">
-                <img class="left-img" src="https://i.ibb.co/wrG1K7R/images-2-removebg-preview.png" alt="Left icon">
-                <button onclick="quickAction()">+</button>
-                <img class="right-img" src="https://i.ibb.co/FqYXJ3p/images-removebg-preview-3.png" alt="Right icon">
+       <!-- Fixed Footer -->
+    <div class="fixed-footer">
+        <img class="left-img" src="https://i.ibb.co/wrG1K7R/images-2-removebg-preview.png" alt="Left icon">
+        <button class="open-btn" onclick="togglePopup()">+</button>
+        <img class="right-img" src="https://i.ibb.co/FqYXJ3p/images-removebg-preview-3.png" alt="Right icon">
+        
+        <!-- Custom Popup -->
+        <div class="custom-popup" id="popup">
+            <div class="popup-header">
+                <h3>Quick Actions</h3>
+                <button class="close-btn" onclick="togglePopup()">x</button>
             </div>
+            <div class="popup-content">
+                <!-- Add your popup content here -->
+                <p>Your quick actions content goes here</p>
+                <!-- You can add more content, buttons, or other elements -->
+            </div>
+        </div>
+    </div>
+
         </div>
 
         <!-- Section Container -->
