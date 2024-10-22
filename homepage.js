@@ -286,10 +286,32 @@ function goBack() {
     // Remove the hash from URL when going back to homepage
     history.pushState('', document.title, window.location.pathname);
 }
-// Quick action function
-function quickAction() {
-    alert('Quick Action Triggered');
-}
+const popup = document.getElementById('popup');
+        
+        function togglePopup() {
+            if (!popup.classList.contains('active')) {
+                popup.style.display = 'block';
+                // Small delay to ensure display block is applied before animation
+                setTimeout(() => {
+                    popup.classList.add('active');
+                }, 10);
+            } else {
+                popup.classList.remove('active');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 300); // Same as transition duration
+            }
+        }
+
+        // Optional: Close popup when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!popup.contains(event.target) && 
+                !document.querySelector('.fixed-footer button').contains(event.target) && 
+                popup.classList.contains('active')) {
+                togglePopup();
+            }
+        });
 
 document.addEventListener('DOMContentLoaded', function() {
     // Prevent copy and paste
