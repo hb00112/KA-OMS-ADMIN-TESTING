@@ -808,7 +808,7 @@ img {
 .popup-header h3 {
     margin: 0;
     color: #111111;
-    font-size: 20px;
+    font-size: 19px;
     text-align: center;
     font-weight: 700;
     letter-spacing: 1px;
@@ -845,22 +845,67 @@ img {
     
 }
 
+.action-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    
+}
+
+.action-itemss {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    
+}
+
 .action-item img {
     width: 37px;
     height: 37px;
     object-fit: contain;
-    background-color: #ad1cda;
-    border-radius: 24px;
+    background-color: #e22222;
+    border-radius: 25px;
     padding: 11px;
-    border: 1px solid #cfcece;
     
+
     
 }
+
+.action-items img{
+    background: rgb(237,121,244);
+background: linear-gradient(90deg, rgba(237,121,244,1) 0%, rgba(209,91,255,1) 21%, rgba(151,49,237,1) 100%);
+    width: 37px;
+    height: 37px;
+    object-fit: contain;
+    border-radius: 25px;
+    padding: 11px;
+}
+
+.action-itemss img{
+    background-color: #15ff00;
+    width: 37px;
+    height: 37px;
+    object-fit: contain;
+    border-radius: 25px;
+    padding: 11px;
+}
+
 
 .action-item span {
     color: #2b2b2b;
     font-size: 11px;
     
 }
+.action-items span {
+    color: #2b2b2b;
+    font-size: 11px;
+    
+}
 
-
+.action-itemss span {
+    color: #2b2b2b;
+    font-size: 11px;
+    
+}
