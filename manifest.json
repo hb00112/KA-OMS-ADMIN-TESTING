@@ -6,7 +6,7 @@
     "description": "A PAYMENT FOR KAMBESHWAR AGENCIES",
     "start_url": "/index.html",
     "display": "standalone",
-    "background_color": "#ffffff",
+    "background_color": "#e81b1b",
     "theme_color": "#4285f4",
     "icons": [
         {
@@ -15,7 +15,7 @@
             "type": "image/png"
         },
         {
-            "src": "https://i.postimg.cc/c1nTCZB7/Add-a-subheading.png",
+            "src": "https://i.postimg.cc/66MKXFYp/Untitled-design-5.png",
             "sizes": "512x512",
             "type": "image/png"
         }
